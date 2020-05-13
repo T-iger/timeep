@@ -5,12 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -27,10 +25,27 @@ public class EchartsController {
         model.addAttribute("zhishidianList",zhiShiDian);
         return "/index";
     }
-    @PostMapping("/xiongdi")
-    public ResponseEntity<?> hello2(Model model){
-        System.out.println(owlService.findIsSiblingOf("中心对称图形").get("NOTE"));
-        return ResponseEntity.ok(owlService.findIsSiblingOf("中心对称图形"));
+    @PostMapping("/isSiblingof")
+    public ResponseEntity<?> findIsSiblingOf(Model model, @RequestParam("find")String find){
+
+        return ResponseEntity.ok(owlService.findIsSiblingOf(find));
     }
+
+    @PostMapping("/hasPostK")
+    public ResponseEntity<?> findHasPostK(Model model, @RequestParam("find")String find){
+
+        return ResponseEntity.ok(owlService.findHasPostK(find));
+    }
+    @PostMapping("/hasPreK")
+    public ResponseEntity<?> findHasPreK(Model model, @RequestParam("find")String find){
+
+        return ResponseEntity.ok(owlService.findHasPreK(find));
+    }
+    @PostMapping("/all")
+    public ResponseEntity<?> all(Model model, @RequestParam("find")String find){
+
+        return ResponseEntity.ok(owlService.findAll(find));
+    }
+
 
 }

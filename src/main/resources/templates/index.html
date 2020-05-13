@@ -48,12 +48,42 @@
                         </div>
                     </div>
                     <div class="ui teal segment center aligned">
+                        <div class="ui form">
+                            <div class="grouped fields">
+                                <label>查询项目</label>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" value="/all" name="address" checked="checked">
+                                        <label>所有</label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" value="/isSiblingof" name="address">
+                                        <label>并列知识点</label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" value="/hasPreK" name="address">
+                                        <label>前序知识点</label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" value="/hasPostK" name="address">
+                                        <label>后继知识点</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="ui  search dropdown  selection dropdown">
-                            <input type="hidden">
+                            <input type="hidden" name="find" id="find">
                             <i class="dropdown icon"></i>
                             <div class="default text">查询的知识点</div>
                             <div class="menu">
-                                <div class="item" data-value="1" th:each="c:${zhishidianList}" th:text="${c}">
+                                <div class="item" data-value="1" th:each="zhishidian:${zhishidianList}"
+                                     th:text="${zhishidian}" th:data-value="${zhishidian}">
                                     三角形
                                 </div>
                                 <!--/*-->
@@ -76,69 +106,19 @@
                 <div class="ui segment top attached">
                     <div class="ui grid  column center aligned">
                         <div class="column">
-                            <h2 class="ui teal header">图形展示</h2>
+                            <h3 class="ui teal header">图形展示</h3>
                         </div>
                     </div>
                 </div>
                 <!--content--->
                 <div class="ui attached segment">
-                    <!--<div class="ui padded  segment vertical  m-padded-tb-big">-->
                     <div class="ui padded  segment vertical  m-padded-tb-big">
-                        <!--<div class="ui middle aligned mobile reversed stackable grid">
-                            <div class="eleven wide column">
-                                <h3 class="ui header">
-                                    <a href="#" th:href="@{/login/student/doing/{id}(id=${publish.id})}" class="m-black"
-                                       th:text="${publish.note}">2020.4.1
-                                        数学作业 </a><label
-                                        th:text="${publish.statusList[0].status}?'(已完成)':'(未完成)'"></label>
-                                </h3>
-                                <p class="m-text" th:text="'开始时间:'+${publish.starttime}">开始时间：2020.4.2 12：00</p>
-                                <p class="m-text" th:text="'截止时间:'+${publish.endtime}">完成截止时间：2020.4.2 12：00</p>
-                                <br>
-                                <div class="ui grid">
-                                    <div class="eleven wide column">
-                                        <div class="ui link list mini horizontal">
-                                            <div class="item">
-                                                <h5 class="content">发布者:</h5>
-                                            </div>
-                                            <div class="item">
-                                                <img src="https://picsum.photos/id/1/100/100" alt=""
-                                                     class="ui avatar image">
-                                                <div class="content">
-                                                    <a href="#" class="header" th:text="${publish.username}">数学老师1</a>
-                                                </div>
-                                            </div>
-                                            <div class="item">
-                                                <i class="calendar icon"></i>
-                                                <span th:text="${#dates.format(publish.updatetime,'yyyy-MM-dd')}">2020.4.1</span>
-                                            </div>
-                                            <div class="item">
-                                                <i class="eye icon"></i>200
-                                            </div>
-                                            <div class="item">
-                                                <span th:text="${publish.course.coursename}"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="right aligned five wide column">
-                                        <a href="#" target="" th:href="@{/login/student/doing/{id}(id=${publish.id})}"
-                                           class="ui teal basic label m-padded-td-tiny">任务详情</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="five wide column">
-                                <a href="#" target="_blank">
-                                    <img src="https://picsum.photos/id/1/800/450" alt="" class="ui rounded image">
-                                </a>
-                            </div>
-                        </div>-->
                         <div class="ui middle aligned mobile reversed stackable grid">
-                            <div id="dom" style="width: 880px; height: 750px; float: left;"></div>
+                            <div id="dom" style="width: 880px; height: 500px; float: left;"></div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -172,192 +152,21 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/echarts@4.7.0/dist/echarts.js"></script>
-<!--<script type="text/javascript" src="../../static/js/echarts4.js" th:src="@{/js/echarts4.js}"></script>-->
-<!--
-<script type="text/javascript">
-    // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main1'));
-    // 指定图表的配置项和数据
-
-    var option = {
-        title: {
-            left: 'center',
-            text: '作业完成情况',
-            top: 20,
-            textStyle: {
-                color: '#611',
-            }
-        },
-        xAxis: {
-            type: 'category',
-            name: '时间',
-            data: ['2020.4.1', '2020.4.2', '2020.4.3', '2020.4.4', '2020.4.5', '2020.4.6', '2020.4.7']
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: [{
-            data: [120, 200, 150, 80, 70, 110, 130],
-            type: 'bar',
-            showBackground: true,
-            backgroundStyle: {
-                color: 'rgba(220, 220, 220, 0.8)'
-            }
-        }]
-    };
-
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
-</script>
--->
-<!--
-<script type="text/javascript">
-    // 基于准备好的dom，初始化echarts实例
-    // var myChart = echarts.init(document.getElementById('main1'));
-    var myChart = echarts.init(document.getElementById('dom'));
-    $.post("/xiongdi", function (result) {
-        console.log(1);
-        var categories = [];
-        categories[0] = {
-            name: '当前搜索'
-        };
-        categories[1] = {
-            name: '兄弟关系实例'
-        };
-        categories[2] = {
-            name: '前继后继关系实例'
-        };
-        categories[3] = {
-            name: '直接关系实例'
-        };
-        /* for (var i = 0; i < 3; i++) {
-            categories[i] = {
-                name: '类目' + i
-            };
-        } */
-        option = {
-            // 图的标题
-            title: {
-                text: 'ECharts 关系图'
-            },
-            // 提示框的配置
-            tooltip: {
-                formatter: function (x) {
-                    return x.data.des;
-                }
-            },
-            // 工具箱
-            toolbox: {
-                // 显示工具箱
-                show: true,
-                feature: {
-                    mark: {
-                        show: true
-                    },
-                    // 还原
-                    restore: {
-                        show: true
-                    },
-                    // 保存为图片
-                    saveAsImage: {
-                        show: true
-                    }
-                }
-            },
-            legend: [{
-                // selectedMode: 'single',
-                data: categories.map(function (a) {
-                    return a.name;
-                })
-            }],
-            series: [{
-                type: 'graph', // 类型:关系图
-                layout: 'force', //图的布局，类型为力导图
-                symbolSize: 40, // 调整节点的大小
-                roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
-                legendHoverLink: true,//是否启用图例 hover(悬停) 时的联动高亮。
-                hoverAnimation: false,//是否开启鼠标悬停节点的显示动画
-                edgeSymbol: ['circle', 'arrow'],
-                edgeSymbolSize: [2, 10],
-                edgeLabel: {
-                    normal: {
-                        textStyle: {
-                            fontSize: 20
-                        }
-                    }
-                },
-                force: {
-                    repulsion: 3000,
-                    edgeLength: [10, 50],
-                    layoutAnimation: false,//因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
-                },
-                draggable: true,
-                //focusNodeAdjacency : true,
-                lineStyle: {
-                    normal: {
-                        width: 4,
-                        color: '#4b565b',
-                    }
-                },
-                edgeLabel: {
-                    normal: {
-                        show: true,
-                        formatter: function (x) {
-                            return x.data.name;
-                        }
-                    }
-                },
-                label: {
-                    normal: {
-                        show: true,
-                        textStyle: {}
-                    }
-                },
-
-                // 数据
-
-                data: result.NOTE,
-
-                links: result.LINK,
-                /*
-                links: [{
-                 source: 'node01',
-                 target: 'node02',
-                 name: 'link01',
-                 des: 'link01des'
-                 }], */
-                categories: categories,
-            }]
-        };
-
-        /* setTimeout(()=> {
-        myChart.setOption(option);
-        }, 500) ; */
-        echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
-        var myChart = echarts.init(document
-            .getElementById('dom'));//构建下一个实例
-        myChart.setOption(option);
-        myChart.on('click', function (params) {
-            clickzhi = params.name;
-            click();
-        });
-    }, "JSON");
-</script>
--->
-
+<!--<script src="https://cdn.jsdelivr.net/npm/echarts@4.7.0/dist/echarts.js"></script>-->
+<script src="../static/js/echarts.js" th:src="@{/js/echarts.js}"></script>
 <script>
     function search() {
+        var url=$("[name='address']:checked").val();
         $.ajax({
-            url: "/xiongdi",
-            data: {name: 'jenny'},
+            url: url,
+            data: {find: $("#find").val()},
             type: "POST",
             dataType: "json",
             success: function (result) {
-                var NOTEs = result["NOTE"];
-                var LINKs = result["LINK"];
-                console.log(result.NOTE,result.LINK);
-                // datas = jQuery.parseJSON(r);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                eval("var data=" + result["NOTE"]);
+                eval("var link=" + result["LINK"]);
+                // data = jQuery.parseJSON(datass);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                // link = jQuery.parseJSON(linkss);  //dataType指明了返回数据为json类型，故不需要再反序列化
                 var myChart = echarts.init(document.getElementById('dom'));
                 var categories = [];
                 categories[0] = {
@@ -385,7 +194,7 @@
                     // 提示框的配置
                     tooltip: {
                         formatter: function (x) {
-                            return x.des;
+                            return x.data.des;
                         }
                     },
                     // 工具箱
@@ -406,12 +215,12 @@
                             }
                         }
                     },
-                    /*legend: [{
+                    legend: [{
                         // selectedMode: 'single',
                         data: categories.map(function (a) {
                             return a.name;
                         })
-                    }],*/
+                    }],
                     series: [{
                         type: 'graph', // 类型:关系图
                         layout: 'force', //图的布局，类型为力导图
@@ -445,7 +254,7 @@
                             normal: {
                                 show: true,
                                 formatter: function (x) {
-                                    return x.name;
+                                    return x.data.name;
                                 }
                             }
                         },
@@ -456,8 +265,8 @@
                             }
                         },
                         // 数据
-                        data: result.NOTE,
-                        links: result.LINK,
+                        data: data,
+                        links: link,
                         /*
                     links: [{
                      source: 'node01',
@@ -472,188 +281,14 @@
                 /* setTimeout(()=> {
             myChart.setOption(option);
             }, 500) ; */
-           /*     echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
-                var myChart = echarts.init(document.getElementById('dom'));//构建下一个实例*/
+                echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
+                var myChart = echarts.init(document.getElementById('dom'));//构建下一个实例
                 myChart.setOption(option);
-               /* myChart.on('click', function (params) {
-                    var clickzhi = params.name;
-                });*/
+                /* myChart.on('click', function (params) {
+                     var clickzhi = params.name;
+                 });*/
             }
         });
-
-       /* function load() {
-            /!* 创建XMLHttpRequest对象 *!/
-            if (window.XMLHttpRequest) {
-                xhr = new XMLHttpRequest();
-            } else {
-                xhr = new ActiveObject("Microsoft.XMLHTTP");
-            }
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-
-                    if (xhr.status == 200) {//表示服务器正常
-                        //请求link数据，重新发送ajax请求
-                        /!*  *!/
-                        var jsonString = xhr.responseText;
-                        eval("var data=" + jsonString);
-                        //doucument.getElementById("dom").innerHTML = jsonString;
-                        /!* 						var hello;
-                     if (radio == 1) {
-                     hello = "<h3>兄弟实例查询</h3>"
-                     }
-                     if (radio == 2) {
-                     hello = "<h3>前继、后继实例查询</h3>"
-                     }
-                     if (radio == 3) {
-                     hello = "<h3>知识点间关系展示查询</h3>"
-                     }
-                     document.getElementById("msg").innerHTML =hello; *!/
-
-                        /!* 测试 *!/
-                        var myChart = echarts.init(document
-                            .getElementById('dom'));
-                        var categories = [];
-                        categories[0] = {
-                            name: '当前搜索'
-                        };
-                        categories[1] = {
-                            name: '兄弟关系实例'
-                        };
-                        categories[2] = {
-                            name: '前继后继关系实例'
-                        };
-                        categories[3] = {
-                            name: '直接关系实例'
-                        };
-                        /!* for (var i = 0; i < 3; i++) {
-                        categories[i] = {
-                            name: '类目' + i
-                        };
-                    } *!/
-                        option = {
-                            // 图的标题
-                            title: {
-                                text: 'ECharts 关系图'
-                            },
-                            // 提示框的配置
-                            tooltip: {
-                                formatter: function (x) {
-                                    return x.data.des;
-                                }
-                            },
-                            // 工具箱
-                            toolbox: {
-                                // 显示工具箱
-                                show: true,
-                                feature: {
-                                    mark: {
-                                        show: true
-                                    },
-                                    // 还原
-                                    restore: {
-                                        show: true
-                                    },
-                                    // 保存为图片
-                                    saveAsImage: {
-                                        show: true
-                                    }
-                                }
-                            },
-                            legend: [{
-                                // selectedMode: 'single',
-                                data: categories.map(function (a) {
-                                    return a.name;
-                                })
-                            }],
-                            series: [{
-                                type: 'graph', // 类型:关系图
-                                layout: 'force', //图的布局，类型为力导图
-                                symbolSize: 40, // 调整节点的大小
-                                roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
-                                legendHoverLink: true,//是否启用图例 hover(悬停) 时的联动高亮。
-                                hoverAnimation: false,//是否开启鼠标悬停节点的显示动画
-                                edgeSymbol: ['circle', 'arrow'],
-                                edgeSymbolSize: [2, 10],
-                                edgeLabel: {
-                                    normal: {
-                                        textStyle: {
-                                            fontSize: 20
-                                        }
-                                    }
-                                },
-                                force: {
-                                    repulsion: 3000,
-                                    edgeLength: [10, 50],
-                                    layoutAnimation: false,//因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
-                                },
-                                draggable: true,
-                                //focusNodeAdjacency : true,
-                                lineStyle: {
-                                    normal: {
-                                        width: 4,
-                                        color: '#4b565b',
-                                    }
-                                },
-                                edgeLabel: {
-                                    normal: {
-                                        show: true,
-                                        formatter: function (x) {
-                                            return x.data.name;
-                                        }
-                                    }
-                                },
-                                label: {
-                                    normal: {
-                                        show: true,
-                                        textStyle: {}
-                                    }
-                                },
-
-                                // 数据
-
-                                data: data,
-
-                                links: link,
-                                /!*
-                            links: [{
-                             source: 'node01',
-                             target: 'node02',
-                             name: 'link01',
-                             des: 'link01des'
-                             }], *!/
-                                categories: categories,
-                            }]
-                        };
-
-                        /!* setTimeout(()=> {
-                    myChart.setOption(option);
-                    }, 500) ; *!/
-                        echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
-                        var myChart = echarts.init(document
-                            .getElementById('dom'));//构建下一个实例
-                        myChart.setOption(option);
-                        myChart.on('click', function (params) {
-                            clickzhi = params.name;
-                            click();
-                        });
-                    } else {
-                        //弹出出错的状态代码
-                        alert(xhr.status);
-                    }
-                }
-            }
-            /!* post提交方式-------字符定为UFT-8 *!/
-            xhr.open("POST", "tx.do", true);
-            xhr.setRequestHeader("Content-type",
-                "application/x-www-form-urlencoded;charset=UTF-8");
-            /!* 发送AJAX请求 *!/
-
-            if (clickzhi != null) {
-                zhi = clickzhi;
-                clickzhi = null;
-            }
-            xhr.send("zhi=" + zhi + "&radio=" + radio);
-        }*/
     }
 </script>
 
