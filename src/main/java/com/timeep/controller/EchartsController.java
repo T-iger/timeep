@@ -19,33 +19,35 @@ import java.util.List;
 public class EchartsController {
     @Autowired
     private OwlService owlService;
-    @GetMapping("/")
+    @GetMapping("timeep")
     public String hello(Model model){
         List<String> zhiShiDian = owlService.findZhiShiDian();
         model.addAttribute("zhishidianList",zhiShiDian);
-        return "/index";
+        return "index";
     }
-    @PostMapping("/isSiblingof")
+    @PostMapping("isSiblingof")
     public ResponseEntity<?> findIsSiblingOf(Model model, @RequestParam("find")String find){
 
         return ResponseEntity.ok(owlService.findIsSiblingOf(find));
     }
 
-    @PostMapping("/hasPostK")
+    @PostMapping("hasPostK")
     public ResponseEntity<?> findHasPostK(Model model, @RequestParam("find")String find){
 
         return ResponseEntity.ok(owlService.findHasPostK(find));
     }
-    @PostMapping("/hasPreK")
+    @PostMapping("hasPreK")
     public ResponseEntity<?> findHasPreK(Model model, @RequestParam("find")String find){
 
         return ResponseEntity.ok(owlService.findHasPreK(find));
     }
-    @PostMapping("/all")
+    @PostMapping("all")
     public ResponseEntity<?> all(Model model, @RequestParam("find")String find){
 
         return ResponseEntity.ok(owlService.findAll(find));
     }
-
+/*知识点和章节的关系
+relateBook 知识点 查章节 查类名称
+relatedK 章节 查知识点*/
 
 }

@@ -255,9 +255,9 @@ public class OwlServiceImpl implements OwlService {
                             if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
                                 count.add(owl.getObject());
                                 note.append(",{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:2" + "}");
-                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + "}");
+                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.3 }}}");
                             } else if (!owl.getSubject().equals(owl.getObject())) {
-                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + "}");
+                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.3 }}}");
                             }
                         }
                     }
@@ -305,22 +305,13 @@ public class OwlServiceImpl implements OwlService {
 
             }
         }
-/*        if(note.toString().endsWith(",")){
-            StringBuilder note1=new StringBuilder();
-            StringBuilder link1=new StringBuilder();
-            note1.append("[{name:'" + subject + ":独立知识点',des:'" + subject + "',symbolSize:70,category:0}]");
-            link1.append("[{}]");
-            String a = note1.substring(0, note1.length());
-            String b = link1.substring(0, link1.length());
+        if (link.toString().startsWith("[,")){
+            StringBuilder link2 = new StringBuilder();
 
-            hashMap.put("NOTE", a);
-            hashMap.put("LINK", b);
+            link2.append("["+link.toString().substring(2,link.length()));
+            link=link2;
+        }
 
-            return hashMap;
-        }else {
-            note.append("]");
-            link.append("]");
-        }*/
         if (link.length() == 0) {
             StringBuilder note1 = new StringBuilder();
             StringBuilder link1 = new StringBuilder();

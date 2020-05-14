@@ -152,14 +152,18 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
-<!--<script src="https://cdn.jsdelivr.net/npm/echarts@4.7.0/dist/echarts.js"></script>-->
-<script src="../static/js/echarts.js" th:src="@{/js/echarts.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@4.7.0/dist/echarts.min.js"></script>
+<!--<script src="../static/js/echarts.js" th:src="@{/js/echarts.js}"></script>-->
 <script>
+   var zhi=null;
     function search() {
+        if (zhi==null){
+            zhi=$("#find").val()
+        }
         var url=$("[name='address']:checked").val();
         $.ajax({
             url: url,
-            data: {find: $("#find").val()},
+            data: {find: zhi },
             type: "POST",
             dataType: "json",
             success: function (result) {
@@ -284,11 +288,13 @@
                 echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
                 var myChart = echarts.init(document.getElementById('dom'));//构建下一个实例
                 myChart.setOption(option);
-                /* myChart.on('click', function (params) {
-                     var clickzhi = params.name;
-                 });*/
+                 myChart.on('click', function (params) {
+                     zhi = params.name;
+                    search();
+                 });
             }
         });
+        zhi=null;
     }
 </script>
 

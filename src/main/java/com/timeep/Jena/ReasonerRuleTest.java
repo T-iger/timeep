@@ -16,7 +16,7 @@ import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.ReasonerVocabulary;
 
 public class ReasonerRuleTest {
-	public static void main(String[] args) {
+	public static void c(String[] args) {
 		// Register a namespace for use in the demo
 		// String demoURI = "http://jena.hpl.hp.com/demo#";
 		// PrintUtil.registerPrefix("demo", demoURI);

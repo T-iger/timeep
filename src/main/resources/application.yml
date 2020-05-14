@@ -16,4 +16,5 @@ logging:
     com.lihu.homework: debug
   file:
     name: log/homework.log
-
+server:
+  port: 8080
