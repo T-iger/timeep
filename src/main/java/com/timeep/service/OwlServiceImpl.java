@@ -26,6 +26,140 @@ public class OwlServiceImpl implements OwlService {
     }
 
     @Override
+    public HashMap<String, String> findFirst(String subject,Boolean is) {
+        List<Owl> owlList = owlRepository.findByPropertyAndObject("type", "MathKChuzhong");
+        HashMap<String, String> hashMap = new HashMap<>();
+        StringBuilder note = new StringBuilder();
+        StringBuilder link = new StringBuilder();
+        HashSet<String> hashSet = new HashSet<>();
+        note.append("[{" + "name:'" + subject + "',des:'" + subject + "',symbolSize:60,category:0" + "},");
+        link.append("[");
+        hashSet.add(subject);
+        for (Owl owl : owlList) {
+            hashSet.add(owl.getSubject());
+            note.append("{" + "name:'" + owl.getSubject() + "',des:'" + owl.getSubject() + "',symbolSize:60,category:1" + "},");
+            link.append("{" + "source:'" + owl.getObject() + "',target:'" + owl.getSubject() + "',name:'属于'" + ",lineStyle: {normal: { curveness: 0.1 }}},");
+        }
+        LinkedHashSet<String> count = new LinkedHashSet<>();
+        count.addAll(hashSet);
+        while (!count.isEmpty()) {
+            String next = count.iterator().next();
+            count.remove(next);
+            List<Owl> owls = owlRepository.findByPropertyAndSubject("isSiblingof", next);
+            if (!owls.isEmpty()) {
+                for (Owl owl : owls) {
+                    //判断subject和Object是否相同，和是否为最后一个
+                    if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
+                        count.add(owl.getObject());
+                        note.append("{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:1" + "},");
+                        link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'并列知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}},");
+                    } else if (!owl.getSubject().equals(owl.getObject())) {
+                        link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'并列知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}},");
+                    }
+                }
+            }
+        }
+        LinkedHashSet<String> count2 = new LinkedHashSet<>();
+        count2.addAll(hashSet);
+        while (!count2.isEmpty()) {
+            String next = count2.iterator().next();
+            count2.remove(next);
+            List<Owl> owls = owlRepository.findByPropertyAndSubject("hasPostK", next);
+            if (!owls.isEmpty()) {
+                for (Owl owl : owls) {
+                    //判断subject和Object是否相同，和是否为最后一个
+                    if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
+                        count2.add(owl.getObject());
+                        note.append("{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:1" + "},");
+                        link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}},");
+                    } else if (!owl.getSubject().equals(owl.getObject())) {
+                        link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}},");
+                    }
+                }
+            }
+        }
+        LinkedHashSet<String> count3 = new LinkedHashSet<>();
+        count3.addAll(hashSet);
+        while (!count3.isEmpty()) {
+            String next = count3.iterator().next();
+            count3.remove(next);
+            List<Owl> owls = owlRepository.findByPropertyAndSubject("hasPreK", next);
+            if (!owls.isEmpty()) {
+                for (Owl owl : owls) {
+                    //判断subject和Object是否相同，和是否为最后一个
+                    if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
+                        count3.add(owl.getObject());
+                        note.append("{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:1" + "},");
+                        link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}},");
+                    } else if (!owl.getSubject().equals(owl.getObject())) {
+                        link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}},");
+                    }
+                }
+            }
+        }
+        if(is) {
+            LinkedHashSet<String> count4 = new LinkedHashSet<>();
+            count4.addAll(hashSet);
+            while (!count4.isEmpty()) {
+                String next = count4.iterator().next();
+                count4.remove(next);
+                List<Owl> owls = owlRepository.findByPropertyAndSubject("relatedBook", next);
+                if (!owls.isEmpty()) {
+                    for (Owl owl : owls) {
+                        //判断subject和Object是否相同，和是否为最后一个
+                        if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
+                            count4.add(owl.getObject());
+                            note.append("{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:3" + "},");
+                            link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'relatedBook'" + ",lineStyle: {normal: { curveness: 0.1 }}},");
+                        } else if (!owl.getSubject().equals(owl.getObject())) {
+                            link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'relatedBook'" + ",lineStyle: {normal: { curveness: 0.1 }}},");
+                        }
+
+                        List<Owl> owls2 = owlRepository.findByPropertyAndSubject("type", owl.getObject());
+                        if (!owls2.isEmpty()) {
+                            for (Owl owl1 : owls2) {
+                                //添加版本信息结点
+                                if (owl1.getObject().startsWith("MathBook") && hashSet.add(owl1.getObject())) {
+                                    note.append("{" + "name:'" + owl1.getObject() + "',des:'版本：" + owl1.getObject() + "',symbolSize:40,category:4" + "},");
+                                    link.append("{" + "source:'" + owl1.getSubject() + "',target:'" + owl1.getObject() + "',name:'属于'" + "},");
+                                } else if (owl1.getObject().startsWith("MathBook")) {
+                                    link.append("{" + "source:'" + owl1.getSubject() + "',target:'" + owl1.getObject() + "',name:'属于'" + "},");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (note.toString().endsWith(",")) {
+            StringBuilder note1 = new StringBuilder();
+            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append("]");
+            note = note1;
+        } else {
+            note.append("]");
+        }
+        if (link.toString().endsWith(",")) {
+            StringBuilder link1 = new StringBuilder();
+            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append("]");
+            link = link1;
+        } else {
+            link.append("]");
+        }
+        String a = note.substring(0, note.length());
+        String b = link.substring(0, link.length());
+        if (a.equals("]")) {
+            a = "[{name:'" + subject + ":无',des:'" + subject + "',symbolSize:60,category:0}]";
+        }
+        hashMap.put("NOTE", a);
+        hashMap.put("LINK", b);
+
+        return hashMap;
+    }
+
+    @Override
     public HashMap<String, String> findIsSiblingOf(String subject) {
         List<Owl> owlList = owlRepository.findByPropertyAndSubject("isSiblingof", subject);
 //        List<Owl> owlList1=new ArrayList<>();
@@ -368,12 +502,13 @@ public class OwlServiceImpl implements OwlService {
                 }
             }
         }
+
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
             note1.append(note.toString().substring(0, note.length() - 1));
             note1.append("]");
-            note=note1;
-        }else{
+            note = note1;
+        } else {
             note.append("]");
         }
 
@@ -381,14 +516,14 @@ public class OwlServiceImpl implements OwlService {
             StringBuilder link1 = new StringBuilder();
             link1.append(link.toString().substring(0, link.length() - 1));
             link1.append("]");
-            link=link1;
+            link = link1;
         } else {
             link.append("]");
         }
         String a = note.substring(0, note.length());
         String b = link.substring(0, link.length());
-        if(a.equals("]")){
-            a="[{name:'"+subject+":无',des:'"+subject+"',symbolSize:60,category:0}]";
+        if (a.equals("]")) {
+            a = "[{name:'" + subject + ":无',des:'" + subject + "',symbolSize:60,category:0}]";
         }
         hashMap.put("NOTE", a);
         hashMap.put("LINK", b);

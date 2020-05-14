@@ -20,6 +20,8 @@ public interface OwlService {
 
     HashMap<String,String> findK(String subject);//查询所有
 
+    HashMap<String,String> findFirst(String subject,Boolean is);//初始展示
+
    /* HashMap<String,String> findHasPreK(String object);//*/
 
 }

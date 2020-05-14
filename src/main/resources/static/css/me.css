@@ -97,6 +97,10 @@ body{
     max-width: 62em!important;
     margin: auto!important;
 }
+.m-container-mini{
+    max-width: 76em!important;
+    margin: auto!important;
+}
 .m-mobile-show{
     display: none!important;
 }

@@ -27,6 +27,18 @@ public class EchartsController {
         return "index";
     }
 
+    @GetMapping("test")
+    public String hello2(Model model) {
+        List<String> zhiShiDian = owlService.findZhiShiDian();
+        model.addAttribute("zhishidianList", zhiShiDian);
+        return "index2";
+    }
+
+    @PostMapping("first")
+    public ResponseEntity<?> first(Model model, @RequestParam("find") String find,@RequestParam("is") Boolean is) {
+        return ResponseEntity.ok(owlService.findFirst(find,is));
+    }
+
     @PostMapping("isSiblingof")
     public ResponseEntity<?> findIsSiblingOf(Model model, @RequestParam("find") String find) {
 
