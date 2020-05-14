@@ -202,10 +202,10 @@ public class OwlServiceImpl implements OwlService {
         StringBuilder link = new StringBuilder();
         HashSet<String> hashSet = new HashSet<>();
         note.append("[{" + "name:'" + subject + "',des:'" + subject + "',symbolSize:60,category:0" + "},");
+        link.append("[");
         if (!isSiblingofOwlList.isEmpty()) {
             hashSet.add(subject);
 //        note.append("[");
-            link.append("[");
             for (int i = 0; i < isSiblingofOwlList.size(); i++) {
                 Owl owl = isSiblingofOwlList.get(i);
                 if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
@@ -235,9 +235,9 @@ public class OwlServiceImpl implements OwlService {
                     //判断subject和Object是否相同，和是否为最后一个
                     if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
                         note.append(",{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:2" + "}");
-                        link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.3 }}}");
+                        link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}}");
                     } else if (!owl.getSubject().equals(owl.getObject())) {
-                        link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.3 }}}");
+                        link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}}");
                     }
                 }
             }
@@ -255,9 +255,9 @@ public class OwlServiceImpl implements OwlService {
                             if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
                                 count.add(owl.getObject());
                                 note.append(",{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:2" + "}");
-                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.3 }}}");
+                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}}");
                             } else if (!owl.getSubject().equals(owl.getObject())) {
-                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.3 }}}");
+                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}}");
                             }
                         }
                     }
@@ -275,9 +275,9 @@ public class OwlServiceImpl implements OwlService {
                     //判断subject和Object是否相同，和是否为最后一个
                     if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
                         note.append(",{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:2" + "}");
-                        link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + "}");
+                        link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}}");
                     } else if (!owl.getSubject().equals(owl.getObject())) {
-                        link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + "}");
+                        link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}}");
                     }
                 }
             }
@@ -295,9 +295,9 @@ public class OwlServiceImpl implements OwlService {
                             if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
                                 count.add(owl.getObject());
                                 note.append(",{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:2" + "}");
-                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + "}");
+                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}}");
                             } else if (!owl.getSubject().equals(owl.getObject())) {
-                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + "}");
+                                link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + ",lineStyle: {normal: { curveness: 0.1 }}}");
                             }
                         }
                     }
@@ -305,11 +305,11 @@ public class OwlServiceImpl implements OwlService {
 
             }
         }
-        if (link.toString().startsWith("[,")){
+        if (link.toString().startsWith("[,")) {
             StringBuilder link2 = new StringBuilder();
 
-            link2.append("["+link.toString().substring(2,link.length()));
-            link=link2;
+            link2.append("[" + link.toString().substring(2, link.length()));
+            link = link2;
         }
 
         if (link.length() == 0) {
@@ -331,6 +331,65 @@ public class OwlServiceImpl implements OwlService {
         String a = note.substring(0, note.length());
         String b = link.substring(0, link.length());
 
+        hashMap.put("NOTE", a);
+        hashMap.put("LINK", b);
+
+        return hashMap;
+    }
+
+    @Override
+    public HashMap<String, String> findK(String subject) {
+        HashMap<String, String> hashMap = new HashMap<>();
+        StringBuilder note = new StringBuilder();
+        StringBuilder link = new StringBuilder();
+        LinkedHashSet<String> hashSet = new LinkedHashSet<>();
+        List<Owl> owlList = owlRepository.findByPropertyAndSubject("relatedBook", subject);
+        link.append("[");
+        if (!owlList.isEmpty()) {
+            note.append("[{" + "name:'" + subject + "',des:'" + subject + "',symbolSize:60,category:0" + "},");
+            hashSet.add(subject);
+            for (Owl owl : owlList) {
+                //添加查询出来的知识点，relatedBook关系
+                if (hashSet.add(owl.getObject())) {
+                    note.append("{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:40,category:3" + "},");
+                    link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'relatedBook关系'" + "},");
+                }
+                List<Owl> owls = owlRepository.findByPropertyAndSubject("type", owl.getObject());
+                if (!owls.isEmpty()) {
+                    for (Owl owl1 : owls) {
+                        //添加版本信息结点
+                        if (owl1.getObject().startsWith("MathBook") && hashSet.add(owl1.getObject())) {
+                            note.append("{" + "name:'" + owl1.getObject() + "',des:'版本：" + owl1.getObject() + "',symbolSize:40,category:4" + "},");
+                            link.append("{" + "source:'" + owl1.getSubject() + "',target:'" + owl1.getObject() + "',name:'属于'" + "},");
+                        } else if (owl1.getObject().startsWith("MathBook")) {
+                            link.append("{" + "source:'" + owl1.getSubject() + "',target:'" + owl1.getObject() + "',name:'属于'" + "},");
+                        }
+                    }
+                }
+            }
+        }
+        if (note.toString().endsWith(",")) {
+            StringBuilder note1 = new StringBuilder();
+            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append("]");
+            note=note1;
+        }else{
+            note.append("]");
+        }
+
+        if (link.toString().endsWith(",")) {
+            StringBuilder link1 = new StringBuilder();
+            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append("]");
+            link=link1;
+        } else {
+            link.append("]");
+        }
+        String a = note.substring(0, note.length());
+        String b = link.substring(0, link.length());
+        if(a.equals("]")){
+            a="[{name:'"+subject+":无',des:'"+subject+"',symbolSize:60,category:0}]";
+        }
         hashMap.put("NOTE", a);
         hashMap.put("LINK", b);
 

@@ -37,9 +37,9 @@
         <div class="ui grid">
             <!--左-->
             <!-左侧的列-->
-            <div class="four wide column">
+            <div class=" four wide column" >
                 <!-搜索--->
-                <div class="ui segments">
+                <div class="ui segments ui sticky " >
                     <div class="ui secondary segment">
                         <div class="ui column grid">
                             <div class="column">
@@ -47,7 +47,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="ui teal segment center aligned">
+                    <div class="ui teal segment center aligned" >
                         <div class="ui form">
                             <div class="grouped fields">
                                 <label>查询项目</label>
@@ -73,6 +73,12 @@
                                     <div class="ui radio checkbox">
                                         <input type="radio" value="/hasPostK" name="address">
                                         <label>后继知识点</label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" value="/relatedBook" name="address">
+                                        <label>relatedBook</label>
                                     </div>
                                 </div>
                             </div>
@@ -114,7 +120,7 @@
                 <div class="ui attached segment">
                     <div class="ui padded  segment vertical  m-padded-tb-big">
                         <div class="ui middle aligned mobile reversed stackable grid">
-                            <div id="dom" style="width: 880px; height: 500px; float: left;"></div>
+                            <div id="dom" style="width: 1080px; height: 700px; float: left;!important;"></div>
                         </div>
                     </div>
                 </div>
@@ -155,6 +161,7 @@
 <script src="https://cdn.jsdelivr.net/npm/echarts@4.7.0/dist/echarts.min.js"></script>
 <!--<script src="../static/js/echarts.js" th:src="@{/js/echarts.js}"></script>-->
 <script>
+    $('.ui.sticky').sticky();
    var zhi=null;
     function search() {
         if (zhi==null){
@@ -183,7 +190,10 @@
                     name: '前继后继关系实例'
                 };
                 categories[3] = {
-                    name: '直接关系实例'
+                    name: '所属章节'
+                };
+                categories[4] = {
+                    name: '教材版本'
                 };
                 /* for (var i = 0; i < 3; i++) {
                 categories[i] = {
@@ -242,9 +252,9 @@
                             }
                         },
                         force: {
-                            repulsion: 3000,
+                            repulsion: 2000,
                             edgeLength: [10, 50],
-                            layoutAnimation: false,//因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
+                            layoutAnimation: true,//因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
                         },
                         draggable: true,
                         //focusNodeAdjacency : true,

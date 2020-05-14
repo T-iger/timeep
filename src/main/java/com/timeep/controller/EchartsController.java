@@ -19,35 +19,45 @@ import java.util.List;
 public class EchartsController {
     @Autowired
     private OwlService owlService;
+
     @GetMapping("timeep")
-    public String hello(Model model){
+    public String hello(Model model) {
         List<String> zhiShiDian = owlService.findZhiShiDian();
-        model.addAttribute("zhishidianList",zhiShiDian);
+        model.addAttribute("zhishidianList", zhiShiDian);
         return "index";
     }
+
     @PostMapping("isSiblingof")
-    public ResponseEntity<?> findIsSiblingOf(Model model, @RequestParam("find")String find){
+    public ResponseEntity<?> findIsSiblingOf(Model model, @RequestParam("find") String find) {
 
         return ResponseEntity.ok(owlService.findIsSiblingOf(find));
     }
 
     @PostMapping("hasPostK")
-    public ResponseEntity<?> findHasPostK(Model model, @RequestParam("find")String find){
+    public ResponseEntity<?> findHasPostK(Model model, @RequestParam("find") String find) {
 
         return ResponseEntity.ok(owlService.findHasPostK(find));
     }
+
     @PostMapping("hasPreK")
-    public ResponseEntity<?> findHasPreK(Model model, @RequestParam("find")String find){
+    public ResponseEntity<?> findHasPreK(Model model, @RequestParam("find") String find) {
 
         return ResponseEntity.ok(owlService.findHasPreK(find));
     }
+
     @PostMapping("all")
-    public ResponseEntity<?> all(Model model, @RequestParam("find")String find){
+    public ResponseEntity<?> all(Model model, @RequestParam("find") String find) {
 
         return ResponseEntity.ok(owlService.findAll(find));
     }
-/*知识点和章节的关系
-relateBook 知识点 查章节 查类名称
-relatedK 章节 查知识点*/
+
+    /*知识点和章节的关系
+    relateBook 知识点 查章节 查类名称
+    relatedK 章节 查知识点*/
+    @PostMapping("relatedBook")
+    public ResponseEntity<?> relatedBook(Model model, @RequestParam("find") String find) {
+        System.out.println();
+        return ResponseEntity.ok(owlService.findK(find));
+    }
 
 }

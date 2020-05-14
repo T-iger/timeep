@@ -18,6 +18,8 @@ public interface OwlService {
 
     HashMap<String,String> findAll(String subject);//查询所有
 
+    HashMap<String,String> findK(String subject);//查询所有
+
    /* HashMap<String,String> findHasPreK(String object);//*/
 
 }
