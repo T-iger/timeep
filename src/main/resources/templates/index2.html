@@ -5,7 +5,7 @@
     <title>时代在线</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
-    <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css?1}">
 </head>
 <body>
 <!--导航-->
@@ -188,7 +188,7 @@
             <div class="ui attached segment">
                 <div class="ui   segment vertical">
                     <div class="ui middle aligned mobile reversed stackable grid">
-                        <div id="dom" style="width: 1080px; height: 500px; float: left;!important;">
+                        <div id="dom" class="m-div">
                             <div class=" active ui inverted dimmer">
                                 <div class="ui text loader">图像渲染中</div>
                             </div>
@@ -369,7 +369,7 @@
                 echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
                 var myChart = echarts.init(document.getElementById('dom'));//构建下一个实例
                 myChart.setOption(option);
-                $(".active.ui.inverted.dimmer").hidden();
+                $(".active.ui.inverted.dimmer").hide();
                 myChart.on('click', function (params) {
                     zhi = params.name;
                     search();
@@ -378,8 +378,7 @@
         });
         zhi = null;
     }
-</script>
-<script>
+
     $.ajax({
         url: "/first",
         data: {find: "MathKChuzhong",is : true},
@@ -510,7 +509,7 @@
             echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
             var myChart = echarts.init(document.getElementById('dom'));//构建下一个实例
             myChart.setOption(option);
-            $(".active.ui.inverted.dimmer").hidden();
+            $(".active.ui.inverted.dimmer").hide();
             myChart.on('click', function (params) {
                 zhi = params.name;
                 search();

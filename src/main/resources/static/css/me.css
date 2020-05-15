@@ -104,6 +104,11 @@ body{
 .m-mobile-show{
     display: none!important;
 }
+.m-div{
+    width: 1080px;!important;
+    height: 500px;!important;
+}
+
 
 @media screen and (max-width: 768px){
     .m-mobile-hide{
@@ -119,5 +124,9 @@ body{
     .m-mobile-lr-clear{
         padding-left: 0!important;
         padding-right: 0!important;
+    }
+    .m-div{
+        width: 483px;!important;
+        height: 500px;!important;
     }
 }

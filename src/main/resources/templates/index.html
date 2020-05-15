@@ -5,7 +5,7 @@
     <title>时代在线</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
-    <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css}">
+    <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css?1}">
 </head>
 <body>
 <!--导航-->
@@ -32,9 +32,9 @@
     </a>
 </nav>
 <!--中间内容-->
-<div class="m-padded-tb-big m-container">
+<div class="m-padded-tb-big m-container ">
     <div class="ui container">
-        <div class="ui grid">
+        <div class="ui grid stackable">
             <!--左-->
             <!-左侧的列-->
             <div class=" four wide column" >
@@ -120,7 +120,7 @@
                 <div class="ui attached segment">
                     <div class="ui padded  segment vertical  m-padded-tb-big">
                         <div class="ui middle aligned mobile reversed stackable grid">
-                            <div id="dom" style="width: 1080px; height: 700px; float: left;!important;">
+                            <div id="dom" class="m-div">
                                 <div class=" active ui inverted dimmer">
                                     <div class="ui text loader">图像渲染中</div>
                                 </div>
@@ -304,8 +304,8 @@
                 echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
                 var myChart = echarts.init(document.getElementById('dom'));//构建下一个实例
                 myChart.setOption(option);
-                $(".active.ui.inverted.dimmer").hidden();
-                 myChart.on('click', function (params) {
+                $(".active.ui.inverted.dimmer").hide();
+                myChart.on('click', function (params) {
                      zhi = params.name;
                     search();
                  });
@@ -313,8 +313,7 @@
         });
         zhi=null;
     }
-</script>
-<script>
+
     $.ajax({
         url: "/first",
         data: {find: "MathKChuzhong",is :false },
@@ -444,8 +443,8 @@
         }, 500) ; */
             echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
             var myChart = echarts.init(document.getElementById('dom'));//构建下一个实例
-
-            myChart.setOption(option);$(".active.ui.inverted.dimmer").hidden();
+            myChart.setOption(option);
+            $(".active.ui.inverted.dimmer").hide();
             myChart.on('click', function (params) {
                 zhi = params.name;
                 search();
