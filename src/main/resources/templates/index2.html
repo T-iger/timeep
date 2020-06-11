@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
     <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css?1}">
 </head>
-<body>
+<body onload="initialize()">
 <!--导航-->
 <nav class="ui inverted attached  segment m-padded-td-mini m-shadow-small">
     <div class="ui container ">
@@ -17,7 +17,7 @@
             <a class="active m-item item m-mobile-hide"><i class="idea icon"></i>关系：</a>
             <div class="item m-item m-mobile-hide">
                 <div class="ui  search dropdown  selection dropdown   ">
-                    <input type="hidden" name="address" value="/all">
+                    <input type="hidden" name="address" value="/all" onchange="search()">
                     <i class="dropdown icon"></i>
                     <div class="default text">查询方式</div>
                     <div class="menu">
@@ -39,34 +39,10 @@
                     </div>
                 </div>
             </div>
-            <!--<div class=" menu m-item m-mobile-hide">
-                <div class="ui floating dropdown labeled icon button item">
-                    <i class="filter icon"></i>
-                    <span class="text" value="1">所有</span>
-                    <input type="hidden">
-                    <div class="menu">
-                        <div class="ui icon search input">
-                            <i class="search icon"></i>
-                            <input type="text" placeholder="搜索标签...">
-                        </div>
-                        <div class="divider"></div>
-                        &lt;!&ndash;           <div class="header">
-                                       <i class="tags icon"></i>
-                                       标签
-                                   </div>&ndash;&gt;
-                        <div class="scrolling menu">
-                            <div class="item" data-value="11">
-                                <div class="ui red empty circular label"></div>
-                                并列知识点
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
             <a class="active m-item item m-mobile-hide"><i class="idea icon"></i>知识点：</a>
             <div class=" item m-item m-mobile-hide">
                 <div class="ui  search dropdown  selection dropdown">
-                    <input type="hidden" name="find" id="find">
+                    <input type="hidden" name="find" id="find" onchange="search()">
                     <i class="dropdown icon"></i>
                     <div class="default text">查询的知识点</div>
                     <div class="menu">
@@ -81,10 +57,9 @@
                         <!--*/-->
                     </div>
                 </div>
-                <div class="ui button" id="search" onclick="search()">
-                    查询
-                </div>
+             <!--   <div class="ui button" id="search" onclick="search()">查询</div>-->
             </div>
+            <a onclick="initialize()" class="active m-item item m-mobile-hide">初始化</a>
             <div class="right menu m-item m-mobile-hide">
                 <div class="ui dropdown item">
                     <div class="text">
@@ -92,7 +67,7 @@
                     </div>
                     <i class="dropdown icon"></i>
                     <div class="menu">
-                        <a href="#" class="item" th:href="@{/logout}"><i class="sign-out icon"></i>注销</a>
+<!--                        <a href="#" class="item" th:href="@{/logout}"><i class="sign-out icon"></i>注销</a>-->
                     </div>
                 </div>
             </div>
@@ -102,75 +77,6 @@
         <i class="sidebar icon"></i>
     </a>
 </nav>
-
-<!--<div class=" ui secondary " >
-    <!-搜索-&ndash;&gt;
-    <div class="ui segments ">
-        <div class="ui secondary segment">
-            <div class="ui column grid">
-                <div class="column">
-                    <i class="idea icon"></i>查询
-                </div>
-            </div>
-        </div>
-        <div class="ui teal segment center aligned">
-            <div class="ui form">
-                <div class="grouped fields">
-                    <label>查询项目</label>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" value="/all" name="address" checked="checked">
-                            <label>所有</label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" value="/isSiblingof" name="address">
-                            <label>并列知识点</label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" value="/hasPreK" name="address">
-                            <label>前序知识点</label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" value="/hasPostK" name="address">
-                            <label>后继知识点</label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" value="/relatedBook" name="address">
-                            <label>relatedBook</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="ui  search dropdown  selection dropdown">
-                <input type="hidden" name="find" id="find">
-                <i class="dropdown icon"></i>
-                <div class="default text">查询的知识点</div>
-                <div class="menu">
-                    <div class="item" data-value="1" th:each="zhishidian:${zhishidianList}"
-                         th:text="${zhishidian}" th:data-value="${zhishidian}">
-                        三角形
-                    </div>
-                    &lt;!&ndash;/*&ndash;&gt;
-                    <div class="item" data-value="1">
-                        四边形
-                    </div>
-                    &lt;!&ndash;*/&ndash;&gt;
-                </div>
-            </div>
-            <div class="ui button" id="search" onclick="search()">
-                查询
-            </div>
-        </div>
-    </div>
-</div>-->
 
 <!--中间内容-->
 <div class="m-padded-tb-big m-container-mini">
@@ -378,10 +284,10 @@
         });
         zhi = null;
     }
-
+function initialize() {
     $.ajax({
         url: "/first",
-        data: {find: "MathKChuzhong",is : true},
+        data: {find: "MathKChuzhong", is: true},
         type: "POST",
         dataType: "json",
         success: function (result) {
@@ -516,6 +422,7 @@
             });
         }
     });
+}
 </script>
 
 <script>

@@ -7,13 +7,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
     <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css?1}">
 </head>
-<body>
+<body onload="initialize()">
 <!--导航-->
 <nav class="ui inverted attached segment m-padded-td-mini m-shadow-small">
     <div class="ui container">
         <div class="ui inverted secondary stackable menu">
             <h2 class="ui teal header item">时代在线</h2>
             <a href="#" class="active m-item item m-mobile-hide"><i class="home icon"></i>首页</a>
+            <a onclick="initialize()" class="active m-item item m-mobile-hide">初始化</a>
             <div class="right menu m-item m-mobile-hide">
                 <div class="ui dropdown item">
                     <div class="text">
@@ -53,41 +54,41 @@
                                 <label>查询项目</label>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" value="/all" name="address" checked="checked">
+                                        <input type="radio" value="/all" name="address" checked="checked" onclick="search()">
                                         <label>所有</label>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" value="/isSiblingof" name="address">
+                                        <input type="radio" value="/isSiblingof" name="address" onclick="search()">
                                         <label>并列知识点</label>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" value="/hasPreK" name="address">
+                                        <input type="radio" value="/hasPreK" name="address" onclick="search()">
                                         <label>前序知识点</label>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" value="/hasPostK" name="address">
+                                        <input type="radio" value="/hasPostK" name="address" onclick="search()">
                                         <label>后继知识点</label>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" value="/relatedBook" name="address">
+                                        <input type="radio" value="/relatedBook" name="address" onclick="search()">
                                         <label>relatedBook</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="ui  search dropdown  selection dropdown">
-                            <input type="hidden" name="find" id="find">
+                            <input type="hidden" name="find" id="find" onchange="search()" >
                             <i class="dropdown icon"></i>
                             <div class="default text">查询的知识点</div>
-                            <div class="menu">
+                            <div class="menu" >
                                 <div class="item" data-value="1" th:each="zhishidian:${zhishidianList}"
                                      th:text="${zhishidian}" th:data-value="${zhishidian}">
                                     三角形
@@ -99,9 +100,9 @@
                                 <!--*/-->
                             </div>
                         </div>
-                        <div class="ui button" id="search" onclick="search()">
+                      <!--  <div class="ui button" id="search" onclick="search()">
                             查询
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
@@ -248,8 +249,8 @@
                         roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
                         legendHoverLink: true,//是否启用图例 hover(悬停) 时的联动高亮。
                         hoverAnimation: false,//是否开启鼠标悬停节点的显示动画
-                        edgeSymbol: ['circle', 'arrow'],
-                        edgeSymbolSize: [2, 10],
+                            edgeSymbol: ['circle', 'arrow'],
+                            edgeSymbolSize: [2, 10],
                         edgeLabel: {
                             normal: {
                                 textStyle: {
@@ -313,10 +314,10 @@
         });
         zhi=null;
     }
-
+function initialize() {
     $.ajax({
         url: "/first",
-        data: {find: "MathKChuzhong",is :false },
+        data: {find: "MathKChuzhong", is: false},
         type: "POST",
         dataType: "json",
         success: function (result) {
@@ -451,6 +452,7 @@
             });
         }
     });
+}
 </script>
 
 <script>

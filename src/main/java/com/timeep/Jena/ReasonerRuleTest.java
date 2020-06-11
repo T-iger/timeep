@@ -16,7 +16,7 @@ import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.ReasonerVocabulary;
 
 public class ReasonerRuleTest {
-	public static void c(String[] args) {
+	public static void main(String[] args) {
 		// Register a namespace for use in the demo
 		// String demoURI = "http://jena.hpl.hp.com/demo#";
 		// PrintUtil.registerPrefix("demo", demoURI);
@@ -35,7 +35,7 @@ public class ReasonerRuleTest {
 
 		// Load test data
 		// Model data = FileManager.get().loadModel("file:expert/demodata.ttl");
-		Model data = FileManager.get().loadModel("file:C:/Users/88551/Desktop/mathv3.1.owl");
+		Model data = FileManager.get().loadModel("file:C:/Users/88551/Desktop/mathv4.0.owl");
 		InfModel infmodel = ModelFactory.createInfModel(reasoner, data);
 
 		// Query for all things related to "a" by "p"
@@ -49,15 +49,18 @@ public class ReasonerRuleTest {
 			String user = "root";
 			String password = "root";
 			con = DriverManager.getConnection(url, user, password);
-			int count=0;
+			int count=1;
 			while (i.hasNext()) {
 				// System.out.println(" - " + PrintUtil.print(i.nextStatement()));
 				org.apache.jena.rdf.model.Statement stmt = i.nextStatement();
 				System.out.println(
 						"<" + stmt.getSubject() + "> <" + stmt.getPredicate() + "> <" + stmt.getObject() + "> .");
 
-				String sql = "insert into tb_owl(subject,property,object) value(?,?,?)";
+				String sql = "insert into tb_owl(id,subject,property,object) value(?,?,?,?)";
 				pstm = con.prepareStatement(sql);
+
+				pstm.setLong(1,Long.valueOf(count));
+				count++;
 
 				/*
 				 * 截取数据库中subject字段
@@ -67,12 +70,12 @@ public class ReasonerRuleTest {
 				if (s.contains("#")) {
 					String s1 = s.substring(0, s.indexOf("#"));
 					String s2 = s.substring(s1.length() + 1, s.length());
-					pstm.setString(1, s2);
+					pstm.setString(2, s2);
 				} else {
-					pstm.setString(1, s);
+					pstm.setString(2, s);
 				}
 
-				pstm.setString(2, stmt.getPredicate().getLocalName());
+				pstm.setString(3, stmt.getPredicate().getLocalName());
 
 				/*
 				 * 截取object字段
@@ -82,12 +85,11 @@ public class ReasonerRuleTest {
 				if (str.contains("#")) {
 					String str1 = str.substring(0, str.indexOf("#"));
 					String str2 = str.substring(str1.length() + 1, str.length());
-					pstm.setString(3, str2);
+					pstm.setString(4, str2);
 				} else {
-					pstm.setString(3, str);
+					pstm.setString(4, str);
 				}
 				int row = pstm.executeUpdate();
-				count++;
 				// System.out.println("新增数据为:" + row + "条");
 			}
 			System.out.println("推理结束"+count);
@@ -111,7 +113,6 @@ public class ReasonerRuleTest {
 				}
 			}
 		}
-
 	}
 
 }

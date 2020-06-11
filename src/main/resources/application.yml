@@ -15,6 +15,6 @@ logging:
     root: info
     com.lihu.homework: debug
   file:
-    name: log/homework.log
+    name: log/timeep.log
 server:
   port: 8080
