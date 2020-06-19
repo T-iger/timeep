@@ -11,6 +11,8 @@ import java.util.List;
 public interface OwlRepository extends JpaRepository<Owl ,Long> {
     List<Owl> findByPropertyAndObject(String property,String object);
 
+    List<Owl> findByPropertyAndObjectContaining(String property,String object);
+
     List<Owl> findByPropertyAndSubject(String property,String subject);
 
 }

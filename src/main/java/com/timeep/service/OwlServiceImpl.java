@@ -582,7 +582,7 @@ public class OwlServiceImpl implements OwlService {
             for (Owl owl : owlList2) {
                 note.append("{" + "name:'" + owl.getObject() + "',des:'学制：" + owl.getObject() + "',symbolSize:60,category:1" + "},");
                 link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'属于'" + "},");
-                if(owl.getObject().equals("初中学段")){
+                if (owl.getObject().equals("初中学段")) {
                     note.append("{" + "name:'初一',des:'学制：初一',symbolSize:60,category:1" + "},");
                     note.append("{" + "name:'初二',des:'学制：初二',symbolSize:60,category:1" + "},");
                     note.append("{" + "name:'初三',des:'学制：初三',symbolSize:60,category:1" + "},");
@@ -632,11 +632,207 @@ public class OwlServiceImpl implements OwlService {
         LinkedHashSet<String> hashSet = new LinkedHashSet<>();
         note.append("[{" + "name:'" + subject + "',des:'" + subject + "',symbolSize:60,category:0" + "},");
         link.append("[");
-        List<Owl> owlList   = owlRepository.findByPropertyAndObject("type", subject);
+        List<Owl> owlList = owlRepository.findByPropertyAndObject("type", subject);
         if (!owlList.isEmpty()) {
             for (Owl owl : owlList) {
-                if(hashSet.add(owl.getSubject())){
+                if (hashSet.add(owl.getSubject())) {
                     note.append("{" + "name:'" + owl.getSubject() + "',des:'" + owl.getSubject() + "',symbolSize:60,category:1" + "},");
+                    link.append("{" + "source:'" + owl.getObject() + "',target:'" + owl.getSubject() + "',name:'属于'" + "},");
+                }
+            }
+        }
+        if (note.toString().endsWith(",")) {
+            StringBuilder note1 = new StringBuilder();
+            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append("]");
+            note = note1;
+        } else {
+            note.append("]");
+        }
+        if (link.toString().endsWith(",")) {
+            StringBuilder link1 = new StringBuilder();
+            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append("]");
+            link = link1;
+        } else {
+            link.append("]");
+        }
+        String a = note.substring(0, note.length());
+        String b = link.substring(0, link.length());
+        hashMap.put("NOTE", a);
+        hashMap.put("LINK", b);
+        return hashMap;
+    }
+
+    @Override
+    public HashMap<String, String> findAllEducationProperty(String subject) {
+        HashMap<String, String> hashMap = new HashMap<>();
+        StringBuilder note = new StringBuilder();
+        StringBuilder link = new StringBuilder();
+        LinkedHashSet<String> hashSet = new LinkedHashSet<>();
+        note.append("[{" + "name:'" + subject + "',des:'" + subject + "',symbolSize:60,category:0" + "},");
+        link.append("[");
+        List<Owl> owlList = owlRepository.findByPropertyAndObjectContaining("topObjectProperty", "学段");
+        if (!owlList.isEmpty()) {
+            for (Owl owl : owlList) {
+                if (hashSet.add(owl.getSubject())) {
+                    note.append("{" + "name:'" + owl.getSubject() + "',des:'学科：" + owl.getSubject() + "',symbolSize:60,category:1" + "},");
+                    link.append("{" + "source:'" + subject + "',target:'" + owl.getSubject() + "',name:'属于'" + "},");
+                }
+                List<Owl> owlList1 = owlRepository.findByPropertyAndSubject("refertoSubject", owl.getSubject());
+                if (!owlList1.isEmpty()) {
+                    for (Owl owl1 : owlList1) {
+                        if (hashSet.add(owl1.getObject())) {
+                            note.append("{" + "name:'" + owl1.getObject() + "',des:'学科：" + owl1.getObject() + "',symbolSize:60,category:2" + "},");
+                            link.append("{" + "source:'" + owl1.getSubject() + "',target:'" + owl1.getObject() + "',name:'属于'" + "},");
+                        } else {
+                            link.append("{" + "source:'" + owl1.getSubject() + "',target:'" + owl1.getObject() + "',name:'属于'" + "},");
+                        }
+                    }
+                }
+                List<Owl> owlList2 = owlRepository.findByPropertyAndSubject("refertoPeriod", owl.getSubject());
+                if (!owlList2.isEmpty()) {
+                    for (Owl owl2 : owlList2) {
+                        if (hashSet.add(owl2.getObject())) {
+                            note.append("{" + "name:'" + owl2.getObject() + "',des:'学制：" + owl2.getObject() + "',symbolSize:60,category:2" + "},");
+                            link.append("{" + "source:'" + owl2.getSubject() + "',target:'" + owl2.getObject() + "',name:'属于'" + "},");
+                        } else {
+                            link.append("{" + "source:'" + owl2.getSubject() + "',target:'" + owl2.getObject() + "',name:'属于'" + "},");
+                        }
+                        if (owl2.getObject().equals("高中学段")) {
+                            if (hashSet.add("高一年级")) {
+                                note.append("{" + "name:'高一年级',des:'学制：高一年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'高一年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'高一年级',name:'拥有'" + "},");
+                            }
+                            if (hashSet.add("高二年级")) {
+                                note.append("{" + "name:'高二年级',des:'学制：高二年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'高二年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'高二年级',name:'拥有'" + "},");
+                            }
+                            if (hashSet.add("高三年级")) {
+                                note.append("{" + "name:'高三年级',des:'学制：高三年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'高三年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'高三年级',name:'拥有'" + "},");
+                            }
+                        }
+                        if (owl2.getObject().equals("初中学段")) {
+                            if (hashSet.add("七年级")) {
+                                note.append("{" + "name:'七年级',des:'学制：七年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'七年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'七年级',name:'拥有'" + "},");
+                            }
+                            if (hashSet.add("八年级")) {
+                                note.append("{" + "name:'八年级',des:'学制：八年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'八年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'八年级',name:'拥有'" + "},");
+                            }
+                            if (hashSet.add("九年级")) {
+                                note.append("{" + "name:'九年级',des:'学制：九年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'九年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'九年级',name:'拥有'" + "},");
+                            }
+                        }
+                        if (owl2.getObject().equals("小学学段")) {
+                            if (hashSet.add("一年级")) {
+                                note.append("{" + "name:'一年级',des:'学制：一年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'一年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'一年级',name:'拥有'" + "},");
+                            }
+                            if (hashSet.add("二年级")) {
+                                note.append("{" + "name:'二年级',des:'学制：二年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'二年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'二年级',name:'拥有'" + "},");
+                            }
+                            if (hashSet.add("三年级")) {
+                                note.append("{" + "name:'三年级',des:'学制：三年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'三年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'三年级',name:'拥有'" + "},");
+                            }
+                            if (hashSet.add("四年级")) {
+                                note.append("{" + "name:'四年级',des:'学制：四年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'四年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'四年级',name:'拥有'" + "},");
+                            }
+                            if (hashSet.add("五年级")) {
+                                note.append("{" + "name:'五年级',des:'学制：五年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'五年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'五年级',name:'拥有'" + "},");
+                            }
+                            if (hashSet.add("六年级")) {
+                                note.append("{" + "name:'六年级',des:'学制：六年级',symbolSize:60,category:2" + "},");
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'六年级',name:'拥有'" + "},");
+                            } else {
+                                link.append("{" + "source:'" + owl2.getObject() + "',target:'六年级',name:'拥有'" + "},");
+                            }
+                        }
+                    }
+                }
+                List<Owl> owlList3 = owlRepository.findByPropertyAndSubject("refertoBookVersion", owl.getSubject());
+                if (!owlList3.isEmpty()) {
+                    for (Owl owl3 : owlList3) {
+                        if (hashSet.add(owl3.getObject())){
+                            note.append("{" + "name:'" + owl3.getObject() + "',des:'版本：" + owl3.getObject() + "',symbolSize:60,category:2" + "},");
+                            link.append("{" + "source:'" + owl3.getSubject() + "',target:'" + owl3.getObject() + "',name:'属于'" + "},");
+                        }else{
+                            link.append("{" + "source:'" + owl3.getSubject() + "',target:'" + owl3.getObject() + "',name:'属于'" + "},");
+                        }
+                      }
+                }
+            }
+        }
+        if (note.toString().endsWith(",")) {
+            StringBuilder note1 = new StringBuilder();
+            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append("]");
+            note = note1;
+        } else {
+            note.append("]");
+        }
+        if (link.toString().endsWith(",")) {
+            StringBuilder link1 = new StringBuilder();
+            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append("]");
+            link = link1;
+        } else {
+            link.append("]");
+        }
+        String a = note.substring(0, note.length());
+        String b = link.substring(0, link.length());
+        hashMap.put("NOTE", a);
+        hashMap.put("LINK", b);
+        return hashMap;
+    }
+
+    /*查询所有的教材体系*/
+    @Override
+    public HashMap<String, String> findAllSection(String query) {
+        HashMap<String, String> hashMap = new HashMap<>();
+        StringBuilder note = new StringBuilder();
+        StringBuilder link = new StringBuilder();
+        LinkedHashSet<String> hashSet = new LinkedHashSet<>();
+        note.append("[{" + "name:'" + query + "',des:'" + query + "',symbolSize:60,category:0" + "},");
+        link.append("[");
+        List<Owl> owlListAll = owlRepository.findByPropertyAndObjectContaining("type","Book");
+        if (!owlListAll.isEmpty()) {
+            for (Owl owl : owlListAll) {
+                if (hashSet.add(owl.getObject())){
+                    note.append("{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:60,category:1" + "},");
+                    link.append("{" + "source:'" + owl.getObject() + "',target:'" + query + "',name:'属于'" + "},");
+                }
+                if (hashSet.add(owl.getSubject())) {
+                    note.append("{" + "name:'" + owl.getSubject() + "',des:'" + owl.getSubject() + "',symbolSize:60,category:2" + "},");
                     link.append("{" + "source:'" + owl.getObject() + "',target:'" + owl.getSubject() + "',name:'属于'" + "},");
                 }
             }

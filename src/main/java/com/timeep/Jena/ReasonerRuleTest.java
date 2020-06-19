@@ -45,7 +45,8 @@ public class ReasonerRuleTest {
 		StmtIterator i = infmodel.listStatements();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			String url = "jdbc:mysql://localhost:3306/ontologyir?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC";
+//			String url = "jdbc:mysql://localhost:3306/ontologyir?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC";
+			String url = "jdbc:mysql://47.96.231.239:3306/ontologyir?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC";
 			String user = "root";
 			String password = "root";
 			con = DriverManager.getConnection(url, user, password);

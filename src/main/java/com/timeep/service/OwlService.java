@@ -27,4 +27,8 @@ public interface OwlService {
 
    HashMap<String,String> findSection(String subject);//查询教材体系
 
+   HashMap<String,String> findAllSection(String subject);//查询所有的教材体系
+
+   HashMap<String,String> findAllEducationProperty(String subject);//查询所有教育属性
+
 }
