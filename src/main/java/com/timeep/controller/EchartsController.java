@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -34,6 +33,31 @@ public class EchartsController {
         return "index2";
     }
 
+    @GetMapping("5")
+    public String p5(Model model) {
+        return "indextest5";
+    }
+
+    @GetMapping("4")
+    public String p4(Model model) {
+        return "indextest4";
+    }
+
+    @GetMapping("3")
+    public String p3(Model model) {
+        return "indextest3";
+    }
+
+    @GetMapping("2")
+    public String p2(Model model) {
+        return "indextest2";
+    }
+
+    @GetMapping("1")
+    public String p1(Model model) {
+        return "indextest1";
+    }
+
     @PostMapping("first")
     public ResponseEntity<?> first(Model model, @RequestParam("find") String find, @RequestParam("is") Boolean is) {
         return ResponseEntity.ok(owlService.findFirst(find, is));
@@ -53,7 +77,7 @@ public class EchartsController {
 
     @PostMapping("hasPreK")
     public ResponseEntity<?> findHasPreK(Model model, @RequestParam("find") String find) {
-        return ResponseEntity.ok(owlService.findAllEducationProperty("所有"));
+        return ResponseEntity.ok(owlService.findKnowledgeGraph("所有"));
 //        return ResponseEntity.ok(owlService.findHasPreK(find));
     }
 
@@ -64,12 +88,11 @@ public class EchartsController {
 
     @PostMapping("hasAllSection")
     public ResponseEntity<?> findAllSection(Model model, @RequestParam("find") String find) {
-        return ResponseEntity.ok(owlService.findAllSection("所有的教材体系"));
+        return ResponseEntity.ok(owlService.findAllKnowledgePointSystem("所有的教材体系"));
     }
 
     @PostMapping("all")
     public ResponseEntity<?> all(Model model, @RequestParam("find") String find) {
-
         return ResponseEntity.ok(owlService.findAll(find));
     }
 
@@ -82,45 +105,78 @@ public class EchartsController {
         return ResponseEntity.ok(owlService.findK(find));
     }
 
+
+    @PostMapping("KnowledgeGraph")
+    public ResponseEntity<?> KnowledgeGraph(Model model) {
+        return ResponseEntity.ok(owlService.findKnowledgeGraph("Thing"));
+    }
+
+    @PostMapping("EducationProperty")
+    public ResponseEntity<?> EducationProperty(Model model) {
+        return ResponseEntity.ok(owlService.findAllEducationProperty("Thing"));
+    }
+
+    @PostMapping("TextbookSystem")
+    public ResponseEntity<?> TextbookSystem(Model model) {
+        return ResponseEntity.ok(owlService.findAllTextbookSystem("Thing"));
+    }
+
+    @PostMapping("findTextbookSystem")
+    public ResponseEntity<?> findTextbookSystem(Model model) {
+        return ResponseEntity.ok(owlService.findTextbookSystem("MathBookHK2014Chuzhong"));
+    }
+
+    @PostMapping("RETextbookSystem")
+    public ResponseEntity<?> RETextbookSystem(Model model,@RequestParam("X")String X) {
+
+        return ResponseEntity.ok(owlService.TextbookSystem(X));
+    }
+
+
+    @PostMapping("KnowledgePointSystem")
+    public ResponseEntity<?> KnowledgePointSystem(Model model) {
+        return ResponseEntity.ok(owlService.findAllKnowledgePointSystem("Thing"));
+    }
+
+
+
     @PostMapping("search")
     public ResponseEntity<?> Search(@RequestParam("flag") int flag,//查询类型
                                     @RequestParam(value = "relation", required = false) String relation,//查询关系
-                                    @RequestParam(value = "query" ,required = false) String query//被查询数据
+                                    @RequestParam(value = "query", required = false) String query//被查询数据
     ) {
-        if (flag == 1&&query.equals("all")) {//教育属性
+        if (flag == 1 && "all".equals(relation)) {//教育属性
             //query=初中数学人教版
-            return ResponseEntity.ok(owlService.findEducationProperty("O"));
+            return ResponseEntity.ok(owlService.findAllEducationProperty("Thing"));
         } else if (flag == 2) {//教材体系
-            //query=MathBookHK2014Chuzhong
-            return ResponseEntity.ok(owlService.findSection(query));
+            // query=MathBookHK2014Chuzhong
+            if ("all".equals(relation)) {
+                return ResponseEntity.ok(owlService.findAllTextbookSystem("Thing"));
+            } else if ("single".equals(relation)) {
+                return ResponseEntity.ok(owlService.findTextbookSystem(query));
+            } else {
+                return ResponseEntity.ok(false);
+            }
         } else if (flag == 3) {//知识点体系
-            if ("并列关系".equals(relation)) {
-                return ResponseEntity.ok(owlService.findIsSiblingOf(query));
-            } else if ("前序关系".equals(relation)) {
-                return ResponseEntity.ok(owlService.findHasPreK(query));
-            } else if ("后继关系".equals(relation)) {
-                return ResponseEntity.ok(owlService.findHasPostK(query));
-            } else if ("relatedBook".equals(relation)) {
-                return ResponseEntity.ok(owlService.findK(query));
+            if ("all".equals(relation)&&query!=null) {
+                return ResponseEntity.ok(owlService.findKnowledgePointSystem(query));
+            } else if ("all".equals(relation)&&query==null) {
+                return ResponseEntity.ok(owlService.findAllKnowledgePointSystem("Thing"));
             } else {
                 return ResponseEntity.ok(false);
             }
         } else if (flag == 4) {//知识图谱
             //query= 知识点
-            return ResponseEntity.ok(owlService.findAll(query));
-
-        } else if (flag == 5) {//所有
-            if (query.equals("所有教育属性")) {
-                return ResponseEntity.ok(owlService.findAllEducationProperty(query));
-            } else if (query.equals("所有教材体系")) {
-                return ResponseEntity.ok(owlService.findAllSection(query));
-            } else if (query.equals("all")) {
-                return ResponseEntity.ok(owlService.findFirst("MathKChuzhong", true));
-            } else {
+            if ("all".equals(relation)) {
+                return ResponseEntity.ok(owlService.findKnowledgeGraph(query));
+            }else{
                 return ResponseEntity.ok(false);
             }
         } else {
             return ResponseEntity.ok(false);
         }
     }
+
+
+
 }

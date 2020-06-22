@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>时代在线</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css?1}">
+</head>
+<body>
+<!--导航-->
+<nav class="ui inverted attached  segment m-padded-td-mini m-shadow-small">
+    <div class="ui container ">
+        <div class="ui inverted secondary stackable menu">
+            <h2 class="ui teal header item">时代在线</h2>
+            <!--<a href="#" class="active m-item item m-mobile-hide"><i class="home icon"></i>首页</a>-->
+            <a class="active m-item item m-mobile-hide"><i class="idea icon"></i>关系：</a>
+            <div class="item m-item m-mobile-hide">
+                <div class="ui  search dropdown  selection dropdown   ">
+                    <input type="hidden" name="address" value="/all" onchange="search()">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">查询方式</div>
+                    <div class="menu">
+                        <div class="item" data-value="/all">
+                            所有
+                        </div>
+                        <div class="item" data-value="/isSiblingof">
+                            并列知识点关系
+                        </div>
+                        <div class="item" data-value="/hasPreK">
+                            前序知识点
+                        </div>
+                        <div class="item" data-value="/hasPostK">
+                            后继知识点
+                        </div>
+                        <div class="item" data-value="/relatedBook">
+                            relatedBook
+                        </div>
+                        <div class="item" data-value="/hasAllEducationProperty">
+                            所有教育属性
+                        </div>
+                        <div class="item" data-value="/hasAllSection">
+                            所有教材体系
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a class="active m-item item m-mobile-hide"><i class="idea icon"></i>知识点：</a>
+            <div class=" item m-item m-mobile-hide">
+                <div class="ui  search dropdown  selection dropdown">
+                    <input type="hidden" name="find" id="find" onchange="search()">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">查询的知识点</div>
+                    <div class="menu">
+                        <div class="item" data-value="1" th:each="zhishidian:${zhishidianList}"
+                             th:text="${zhishidian}" th:data-value="${zhishidian}">
+                            三角形
+                        </div>
+                        <!--/*-->
+                        <div class="item" data-value="1">
+                            四边形
+                        </div>
+                        <!--*/-->
+                    </div>
+                </div>
+                <!--   <div class="ui button" id="search" onclick="search()">查询</div>-->
+            </div>
+            <a onclick="initialize()" class="active m-item item m-mobile-hide">初始化</a>
+            <div class="right menu m-item m-mobile-hide">
+                <div class="ui dropdown item">
+                    <div class="text">
+                        <img class="ui avatar image" src="https://picsum.photos/id/112/400/400">Username01
+                    </div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <!--                        <a href="#" class="item" th:href="@{/logout}"><i class="sign-out icon"></i>注销</a>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="ui menu toggle button black m-right-top m-mobile-show">
+        <i class="sidebar icon"></i>
+    </a>
+</nav>
+
+<!--中间内容-->
+<div class="m-padded-tb-big m-container-mini">
+    <div class="ui grid">
+        <div class=" wide column">
+            <!--header-->
+            <div class="ui segment top attached">
+                <div class="ui grid  column center aligned">
+                    <div class="column">
+                        <h3 class="ui teal header">图形展示</h3>
+                    </div>
+                </div>
+            </div>
+            <!--content--->
+            <div class="ui attached segment">
+                <div class="ui   segment vertical">
+                    <div class="ui middle aligned mobile reversed stackable grid">
+                        <div id="dom" class="m-div">
+                            <div class=" active ui inverted dimmer">
+                                <div class="ui text loader">图像渲染中</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--底部footer-->
+<footer class="ui inverted segment vertical m-padded-tb-massive">
+    <div class="ui center aligned container">
+        <div class="ui grid divided stackable inverted">
+            <div class="three wide  column">
+                <h4 class="ui inverted header">关于</h4>
+            </div>
+            <div class="three wide  column">
+                <h4 class="ui inverted header">地址</h4>
+                <p>安徽省合肥市</p>
+            </div>
+            <div class="three wide  column">
+                <h4 class="ui inverted header">...</h4>
+            </div>
+            <div class="seven wide column">
+                <h4 class="ui inverted header"></h4>
+                <p>@2020</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <p class="m-text-thin m-text-spaced">邮编：231131 电话：xxx QQ：885515333 E-mail：885515333@qq.com</p>
+    </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@4.7.0/dist/echarts.min.js"></script>
+<!--<script src="../static/js/echarts.js" th:src="@{/js/echarts.js}"></script>-->
+<script>
+
+    var myChart = echarts.init(document.getElementById('dom'));
+    var categories = [];
+    categories[0] = {
+        name: '当前搜索'
+    };
+    categories[1] = {
+        name: '兄弟关系实例'
+    };
+    categories[2] = {
+        name: '前继后继关系实例'
+    };
+    categories[3] = {
+        name: '所属章节'
+    };
+    categories[4] = {
+        name: '教材版本'
+    };
+    /* for (var i = 0; i < 3; i++) {
+    categories[i] = {
+        name: '类目' + i
+    };
+} */
+    option = {
+        // 图的标题
+        title: {
+            text: ''
+        },
+        // 提示框的配置
+        tooltip: {
+            formatter: function (x) {
+                return x.data.des;
+            }
+        },
+        // 工具箱
+        toolbox: {
+            // 显示工具箱
+            show: true,
+            feature: {
+                mark: {
+                    show: true
+                },
+                // 还原
+                restore: {
+                    show: true
+                },
+                // 保存为图片
+                saveAsImage: {
+                    show: true
+                }
+            }
+        },
+        legend: [{
+            // selectedMode: 'single',
+            data: categories.map(function (a) {
+                return a.name;
+            })
+        }],
+        series: [{
+            type: 'graph', // 类型:关系图
+            layout: 'force', //图的布局，类型为力导图
+            symbolSize: 40, // 调整节点的大小
+            roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
+            legendHoverLink: true,//是否启用图例 hover(悬停) 时的联动高亮。
+            hoverAnimation: false,//是否开启鼠标悬停节点的显示动画
+            edgeSymbol: ['circle', 'arrow'],
+            edgeSymbolSize: [2, 10],
+            edgeLabel: {
+                normal: {
+                    textStyle: {
+                        fontSize: 20
+                    }
+                }
+            },
+            force: {
+                repulsion: 2000,
+                edgeLength: [10, 50],
+                layoutAnimation: true,//因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
+            },
+            draggable: true,
+            //focusNodeAdjacency : true,
+            lineStyle: {
+                normal: {
+                    width: 4,
+                    color: '#4b565b',
+                }
+            },
+            edgeLabel: {
+                normal: {
+                    show: true,
+                    formatter: function (x) {
+                        return x.data.name;
+                    }
+                }
+            },
+            label: {
+                normal: {
+                    show: true,
+                    textStyle: {}
+                }
+            },
+            // 数据
+            data: [{name: 'Thing', des: 'Thing', symbolSize: 60, category: 0}, {
+                name: 'MathKChuzhong',
+                des: 'MathKChuzhong',
+                symbolSize: 50,
+                category: 0
+            }, {name: '去括号（添括号）', des: '去括号（添括号）', symbolSize: 50, category: 1}, {
+                name: '全等三角形',
+                des: '全等三角形',
+                symbolSize: 50,
+                category: 1
+            }, {name: '同底数幂的除法', des: '同底数幂的除法', symbolSize: 50, category: 1}, {
+                name: '有理数运算律',
+                des: '有理数运算律',
+                symbolSize: 50,
+                category: 1
+            }, {
+                name: '有理数的加、减、乘、除、乘方及简单的混合运算',
+                des: '有理数的加、减、乘、除、乘方及简单的混合运算',
+                symbolSize: 50,
+                category: 1
+            }, {name: '乘方', des: '乘方', symbolSize: 50, category: 1}, {
+                name: '绝对值',
+                des: '绝对值',
+                symbolSize: 50,
+                category: 1
+            }, {name: '相反数', des: '相反数', symbolSize: 50, category: 1}, {
+                name: '数轴',
+                des: '数轴',
+                symbolSize: 50,
+                category: 1
+            }, {name: '相交线与平行线', des: '相交线与平行线', symbolSize: 50, category: 1}, {
+                name: '实数',
+                des: '实数',
+                symbolSize: 50,
+                category: 1
+            }, {name: '科学记数法', des: '科学记数法', symbolSize: 50, category: 1}, {
+                name: '有理数的大小比较',
+                des: '有理数的大小比较',
+                symbolSize: 50,
+                category: 1
+            }, {name: '有理数的运算', des: '有理数的运算', symbolSize: 50, category: 1}, {
+                name: '有理数的概念',
+                des: '有理数的概念',
+                symbolSize: 50,
+                category: 1
+            }, {name: '数据的分析', des: '数据的分析', symbolSize: 50, category: 1}, {
+                name: '近似数',
+                des: '近似数',
+                symbolSize: 50,
+                category: 1
+            }, {name: '位似图形的画法', des: '位似图形的画法', symbolSize: 50, category: 1}, {
+                name: '多项式与多项式相乘',
+                des: '多项式与多项式相乘',
+                symbolSize: 50,
+                category: 1
+            }, {name: '投影与视图', des: '投影与视图', symbolSize: 50, category: 1}, {
+                name: '反比例函数',
+                des: '反比例函数',
+                symbolSize: 50,
+                category: 1
+            }, {name: '平方差公式', des: '平方差公式', symbolSize: 50, category: 1}, {
+                name: '线段的比较',
+                des: '线段的比较',
+                symbolSize: 50,
+                category: 1
+            }, {name: '勾股定理', des: '勾股定理', symbolSize: 50, category: 1}, {
+                name: '公式法(平方差、完全平方公式)',
+                des: '公式法(平方差、完全平方公式)',
+                symbolSize: 50,
+                category: 1
+            }, {name: '位似及位似中心', des: '位似及位似中心', symbolSize: 50, category: 1}, {
+                name: '整式的加减',
+                des: '整式的加减',
+                symbolSize: 50,
+                category: 1
+            }, {name: '二次函数', des: '二次函数', symbolSize: 50, category: 1}, {
+                name: '整式的乘除与因式分解',
+                des: '整式的乘除与因式分解',
+                symbolSize: 50,
+                category: 1
+            }, {name: '单项式与单项式相乘', des: '单项式与单项式相乘', symbolSize: 50, category: 1}, {
+                name: '同底数幂的乘法',
+                des: '同底数幂的乘法',
+                symbolSize: 50,
+                category: 1
+            }, {name: '点与圆的位置关系', des: '点与圆的位置关系', symbolSize: 50, category: 1}, {
+                name: '平面直角坐标系中的位似变换',
+                des: '平面直角坐标系中的位似变换',
+                symbolSize: 50,
+                category: 1
+            }, {name: '一元一次方程', des: '一元一次方程', symbolSize: 50, category: 1}, {
+                name: '圆的旋转不变性性及弧、弦、圆心角的关系定理',
+                des: '圆的旋转不变性性及弧、弦、圆心角的关系定理',
+                symbolSize: 50,
+                category: 1
+            }, {name: '锐角三角函数', des: '锐角三角函数', symbolSize: 50, category: 1}, {
+                name: '二元一次方程组的解法',
+                des: '二元一次方程组的解法',
+                symbolSize: 50,
+                category: 1
+            }, {name: '二元一次方程（组）及解的概念', des: '二元一次方程（组）及解的概念', symbolSize: 50, category: 1}, {
+                name: '二元一次方程组的应用',
+                des: '二元一次方程组的应用',
+                symbolSize: 50,
+                category: 1
+            }, {name: '圆的轴对称性及垂径定理及其推论', des: '圆的轴对称性及垂径定理及其推论', symbolSize: 50, category: 1}, {
+                name: '直线、射线、线段的概念表示法',
+                des: '直线、射线、线段的概念表示法',
+                symbolSize: 50,
+                category: 1
+            }, {name: '角的大小与度量、比较与运算', des: '角的大小与度量、比较与运算', symbolSize: 50, category: 1}, {
+                name: '点、线、面、体之间的关系',
+                des: '点、线、面、体之间的关系',
+                symbolSize: 50,
+                category: 1
+            }, {name: '图形的展开与折叠', des: '图形的展开与折叠', symbolSize: 50, category: 1}, {
+                name: '初步认识几何图形（立体图形、平面图形）',
+                des: '初步认识几何图形（立体图形、平面图形）',
+                symbolSize: 50,
+                category: 1
+            }, {name: '角的和差', des: '角的和差', symbolSize: 50, category: 1}, {
+                name: '相似多边形的性质',
+                des: '相似多边形的性质',
+                symbolSize: 50,
+                category: 1
+            }, {name: '两点间的距离', des: '两点间的距离', symbolSize: 50, category: 1}, {
+                name: '列一次方程（组）解应用题的一般步骤',
+                des: '列一次方程（组）解应用题的一般步骤',
+                symbolSize: 50,
+                category: 1
+            }, {name: '等式的性质', des: '等式的性质', symbolSize: 50, category: 1}, {
+                name: '方程、方程的解的有关定义',
+                des: '方程、方程的解的有关定义',
+                symbolSize: 50,
+                category: 1
+            }, {name: '一元一次方程的定义', des: '一元一次方程的定义', symbolSize: 50, category: 1}, {
+                name: '一元一次方程的解法',
+                des: '一元一次方程的解法',
+                symbolSize: 50,
+                category: 1
+            }, {name: '反证法', des: '反证法', symbolSize: 50, category: 1}, {
+                name: '四边形',
+                des: '四边形',
+                symbolSize: 50,
+                category: 1
+            }, {name: '统计图的知识', des: '统计图的知识', symbolSize: 50, category: 1}, {
+                name: '频数与频率',
+                des: '频数与频率',
+                symbolSize: 50,
+                category: 1
+            }, {name: '统计调查的种类', des: '统计调查的种类', symbolSize: 50, category: 1}, {
+                name: '个体、总体、样本、样本总量',
+                des: '个体、总体、样本、样本总量',
+                symbolSize: 50,
+                category: 1
+            }, {name: '概率初步', des: '概率初步', symbolSize: 50, category: 1}, {
+                name: '因式分解的概念',
+                des: '因式分解的概念',
+                symbolSize: 50,
+                category: 1
+            }, {name: '方位角', des: '方位角', symbolSize: 50, category: 1}, {
+                name: '合并同类项',
+                des: '合并同类项',
+                symbolSize: 50,
+                category: 1
+            }, {name: '线段的和差及线段的中点', des: '线段的和差及线段的中点', symbolSize: 50, category: 1}, {
+                name: '圆',
+                des: '圆',
+                symbolSize: 50,
+                category: 1
+            }, {name: '三线八角', des: '三线八角', symbolSize: 50, category: 1}, {
+                name: '单项式与多项式相乘',
+                des: '单项式与多项式相乘',
+                symbolSize: 50,
+                category: 1
+            }, {name: '幂的乘方', des: '幂的乘方', symbolSize: 50, category: 1}, {
+                name: '二次根式',
+                des: '二次根式',
+                symbolSize: 50,
+                category: 1
+            }, {name: '积的乘方', des: '积的乘方', symbolSize: 50, category: 1}, {
+                name: '度、分、秒的运算',
+                des: '度、分、秒的运算',
+                symbolSize: 50,
+                category: 1
+            }, {name: '分式', des: '分式', symbolSize: 50, category: 1}, {
+                name: '旋转',
+                des: '旋转',
+                symbolSize: 50,
+                category: 1
+            }, {name: '三角形', des: '三角形', symbolSize: 50, category: 1}, {
+                name: '用字母表示数',
+                des: '用字母表示数',
+                symbolSize: 50,
+                category: 1
+            }, {name: '简单代数式的实际背景或几何意义', des: '简单代数式的实际背景或几何意义', symbolSize: 50, category: 1}, {
+                name: '代数式的值',
+                des: '代数式的值',
+                symbolSize: 50,
+                category: 1
+            }, {name: '用代数式表示数量关系', des: '用代数式表示数量关系', symbolSize: 50, category: 1}, {
+                name: '整式概念及整式的加、减',
+                des: '整式概念及整式的加、减',
+                symbolSize: 50,
+                category: 1
+            }, {name: '不等式与不等式组', des: '不等式与不等式组', symbolSize: 50, category: 1}, {
+                name: '一次函数',
+                des: '一次函数',
+                symbolSize: 50,
+                category: 1
+            }, {name: '相似图形、相似多边形的概念', des: '相似图形、相似多边形的概念', symbolSize: 50, category: 1}, {
+                name: '多项式除以单项式',
+                des: '多项式除以单项式',
+                symbolSize: 50,
+                category: 1
+            }, {name: '有理数', des: '有理数', symbolSize: 50, category: 1}, {
+                name: '平面直角坐标系',
+                des: '平面直角坐标系',
+                symbolSize: 50,
+                category: 1
+            }, {name: '完全平方公式', des: '完全平方公式', symbolSize: 50, category: 1}, {
+                name: '数据的收集、整理与描述',
+                des: '数据的收集、整理与描述',
+                symbolSize: 50,
+                category: 1
+            }, {name: '一元二次方程', des: '一元二次方程', symbolSize: 50, category: 1}, {
+                name: '相似三角形的周长与面积',
+                des: '相似三角形的周长与面积',
+                symbolSize: 50,
+                category: 1
+            }, {name: '频数直方图', des: '频数直方图', symbolSize: 50, category: 1}, {
+                name: '轴对称',
+                des: '轴对称',
+                symbolSize: 50,
+                category: 1
+            }, {name: '图形的认识', des: '图形的认识', symbolSize: 50, category: 1}, {
+                name: '单项式除以单项式',
+                des: '单项式除以单项式',
+                symbolSize: 50,
+                category: 1
+            }, {name: '二元一次方程组', des: '二元一次方程组', symbolSize: 50, category: 1}, {
+                name: '余角和补角',
+                des: '余角和补角',
+                symbolSize: 50,
+                category: 1
+            }, {name: '相似三角形的判定方法及其测量中的应用', des: '相似三角形的判定方法及其测量中的应用', symbolSize: 50, category: 1}, {
+                name: '相似',
+                des: '相似',
+                symbolSize: 50,
+                category: 1
+            }, {name: '提公因式法', des: '提公因式法', symbolSize: 50, category: 1}, {
+                name: '证明的意义和证明的必要性，综合法证明的格式',
+                des: '证明的意义和证明的必要性，综合法证明的格式',
+                symbolSize: 50,
+                category: 1
+            }, {name: '圆周角定理及其推论', des: '圆周角定理及其推论', symbolSize: 50, category: 1}, {
+                name: '三角形的外接圆、外心',
+                des: '三角形的外接圆、外心',
+                symbolSize: 50,
+                category: 1
+            }, {
+                name: 'MathBookRJ2014Chuzhong',
+                des: '版本：MathBookRJ2014Chuzhong',
+                symbolSize: 40,
+                category: 3
+            }, {
+                name: 'MathBookHK2014Chuzhong',
+                des: '版本：MathBookHK2014Chuzhong',
+                symbolSize: 40,
+                category: 3
+            }, {name: '数轴、相反数和绝对值', des: '数轴、相反数和绝对值', symbolSize: 40, category: 2}, {
+                name: '有理数的加减法',
+                des: '有理数的加减法',
+                symbolSize: 40,
+                category: 2
+            }, {name: '有理数的乘除法', des: '有理数的乘除法', symbolSize: 40, category: 2}, {
+                name: '有理数的乘方',
+                des: '有理数的乘方',
+                symbolSize: 40,
+                category: 2
+            }, {name: '从算式到方程', des: '从算式到方程', symbolSize: 40, category: 2}, {
+                name: '一元一次方程及其解法',
+                des: '一元一次方程及其解法',
+                symbolSize: 40,
+                category: 2
+            }, {name: '线段、射线、直线', des: '线段、射线、直线', symbolSize: 40, category: 2}, {
+                name: '直线、射线、线段',
+                des: '直线、射线、线段',
+                symbolSize: 40,
+                category: 2
+            }, {name: '角', des: '角', symbolSize: 40, category: 2}, {
+                name: '用统计图描述数据',
+                des: '用统计图描述数据',
+                symbolSize: 40,
+                category: 2
+            }, {name: '从图表中的数据获取信息', des: '从图表中的数据获取信息', symbolSize: 40, category: 2}, {
+                name: '二元一次方程组及其解法',
+                des: '二元一次方程组及其解法',
+                symbolSize: 40,
+                category: 2
+            }, {name: '整式', des: '整式', symbolSize: 40, category: 2}, {
+                name: '去括号、添括号',
+                des: '去括号、添括号',
+                symbolSize: 40,
+                category: 2
+            }, {name: '几何图形', des: '几何图形', symbolSize: 40, category: 2}, {
+                name: '角的比较与补（余）角',
+                des: '角的比较与补（余）角',
+                symbolSize: 40,
+                category: 2
+            }, {
+                name: '解一元一次方程（二）——去括号与去分母',
+                des: '解一元一次方程（二）——去括号与去分母',
+                symbolSize: 40,
+                category: 2
+            }, {
+                name: '解一元一次方程（一）——合并同类项与移项',
+                des: '解一元一次方程（一）——合并同类项与移项',
+                symbolSize: 40,
+                category: 2
+            }, {name: '一元一次方程的应用', des: '一元一次方程的应用', symbolSize: 40, category: 2}, {
+                name: '代数式',
+                des: '代数式',
+                symbolSize: 40,
+                category: 2
+            }, {name: '三元一次方程组及其解法', des: '三元一次方程组及其解法', symbolSize: 40, category: 2}, {
+                name: '有理数的大小',
+                des: '有理数的大小',
+                symbolSize: 40,
+                category: 2
+            }, {name: '线段的长短比较', des: '线段的长短比较', symbolSize: 40, category: 2}, {
+                name: '数据的整理',
+                des: '数据的整理',
+                symbolSize: 40,
+                category: 2
+            }, {name: '数据的收集', des: '数据的收集', symbolSize: 40, category: 2}],
+            links: [{source:'Thing',target:'MathKChuzhong'},{source:'MathKChuzhong',target:'去括号（添括号）},{source:'MathKChuzhong',target:'全等三角形},{source:'MathKChuzhong',target:'同底数幂的除法},{source:'MathKChuzhong',target:'有理数运算律},{source:'有理数运算律',target:'有理数的加、减、乘、除、乘方及简单的混合运算',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的加、减、乘、除、乘方及简单的混合运算},{source:'有理数运算律',target:'有理数运算律',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数运算律},{source:'有理数运算律',target:'有理数的加、减、乘、除、乘方及简单的混合运算',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'有理数的加、减、乘、除、乘方及简单的混合运算},{source:'有理数运算律',target:'乘方',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'乘方},{source:'乘方',target:'绝对值',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'绝对值},{source:'绝对值',target:'相反数',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'相反数},{source:'相反数',target:'数轴',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'数轴},{source:'MathKChuzhong',target:'相交线与平行线},{source:'MathKChuzhong',target:'实数},{source:'相反数',target:'科学记数法',name:'并列知识点'},{source:'MathKChuzhong',target:'科学记数法},{source:'相反数',target:'有理数的大小比较',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的大小比较},{source:'相反数',target:'相反数',name:'并列知识点'},{source:'MathKChuzhong',target:'相反数},{source:'相反数',target:'有理数的运算',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的运算},{source:'相反数',target:'有理数的概念',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的概念},{source:'相反数',target:'绝对值',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'绝对值},{source:'绝对值',target:'乘方',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'乘方},{source:'相反数',target:'数轴',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'数轴},{source:'MathKChuzhong',target:'数据的分析},{source:'MathKChuzhong',target:'近似数},{source:'MathKChuzhong',target:'位似图形的画法},{source:'MathKChuzhong',target:'多项式与多项式相乘},{source:'MathKChuzhong',target:'投影与视图},{source:'MathKChuzhong',target:'反比例函数},{source:'MathKChuzhong',target:'平方差公式},{source:'乘方',target:'乘方',name:'并列知识点'},{source:'MathKChuzhong',target:'乘方},{source:'乘方',target:'有理数运算律',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'有理数运算律},{source:'乘方',target:'有理数的加、减、乘、除、乘方及简单的混合运算',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'有理数的加、减、乘、除、乘方及简单的混合运算},{source:'乘方',target:'绝对值',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'绝对值},{source:'绝对值',target:'相反数',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'相反数},{source:'MathKChuzhong',target:'线段的比较},{source:'科学记数法',target:'有理数的运算',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的运算},{source:'科学记数法',target:'有理数的概念',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的概念},{source:'科学记数法',target:'有理数的大小比较',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的大小比较},{source:'科学记数法',target:'相反数',name:'并列知识点'},{source:'MathKChuzhong',target:'相反数},{source:'科学记数法',target:'科学记数法',name:'并列知识点'},{source:'MathKChuzhong',target:'科学记数法},{source:'科学记数法',target:'数轴',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'数轴},{source:'MathKChuzhong',target:'勾股定理},{source:'MathKChuzhong',target:'公式法(平方差、完全平方公式)},{source:'MathKChuzhong',target:'位似及位似中心},{source:'MathKChuzhong',target:'整式的加减},{source:'MathKChuzhong',target:'二次函数},{source:'MathKChuzhong',target:'整式的乘除与因式分解},{source:'MathKChuzhong',target:'单项式与单项式相乘},{source:'MathKChuzhong',target:'同底数幂的乘法},{source:'MathKChuzhong',target:'点与圆的位置关系},{source:'MathKChuzhong',target:'平面直角坐标系中的位似变换},{source:'MathKChuzhong',target:'一元一次方程},{source:'MathKChuzhong',target:'圆的旋转不变性性及弧、弦、圆心角的关系定理},{source:'MathKChuzhong',target:'锐角三角函数},{source:'MathKChuzhong',target:'二元一次方程组的解法},{source:'二元一次方程组的解法',target:'二元一次方程（组）及解的概念',name:'并列知识点'},{source:'MathKChuzhong',target:'二元一次方程（组）及解的概念},{source:'二元一次方程组的解法',target:'二元一次方程组的应用',name:'并列知识点'},{source:'MathKChuzhong',target:'二元一次方程组的应用},{source:'二元一次方程组的解法',target:'二元一次方程组的解法',name:'并列知识点'},{source:'MathKChuzhong',target:'二元一次方程组的解法},{source:'MathKChuzhong',target:'圆的轴对称性及垂径定理及其推论},{source:'MathKChuzhong',target:'直线、射线、线段的概念表示法},{source:'直线、射线、线段的概念表示法',target:'角的大小与度量、比较与运算',name:'并列知识点'},{source:'MathKChuzhong',target:'角的大小与度量、比较与运算},{source:'直线、射线、线段的概念表示法',target:'点、线、面、体之间的关系',name:'并列知识点'},{source:'MathKChuzhong',target:'点、线、面、体之间的关系},{source:'直线、射线、线段的概念表示法',target:'图形的展开与折叠',name:'并列知识点'},{source:'MathKChuzhong',target:'图形的展开与折叠},{source:'直线、射线、线段的概念表示法',target:'直线、射线、线段的概念表示法',name:'并列知识点'},{source:'MathKChuzhong',target:'直线、射线、线段的概念表示法},{source:'直线、射线、线段的概念表示法',target:'初步认识几何图形（立体图形、平面图形）',name:'并列知识点'},{source:'MathKChuzhong',target:'初步认识几何图形（立体图形、平面图形）},{source:'MathKChuzhong',target:'角的和差},{source:'MathKChuzhong',target:'相似多边形的性质},{source:'MathKChuzhong',target:'两点间的距离},{source:'MathKChuzhong',target:'列一次方程（组）解应用题的一般步骤},{source:'列一次方程（组）解应用题的一般步骤',target:'等式的性质',name:'并列知识点'},{source:'MathKChuzhong',target:'等式的性质},{source:'列一次方程（组）解应用题的一般步骤',target:'方程、方程的解的有关定义',name:'并列知识点'},{source:'MathKChuzhong',target:'方程、方程的解的有关定义},{source:'列一次方程（组）解应用题的一般步骤',target:'一元一次方程的定义',name:'并列知识点'},{source:'MathKChuzhong',target:'一元一次方程的定义},{source:'列一次方程（组）解应用题的一般步骤',target:'列一次方程（组）解应用题的一般步骤',name:'并列知识点'},{source:'MathKChuzhong',target:'列一次方程（组）解应用题的一般步骤},{source:'列一次方程（组）解应用题的一般步骤',target:'一元一次方程的解法',name:'并列知识点'},{source:'MathKChuzhong',target:'一元一次方程的解法},{source:'有理数的加、减、乘、除、乘方及简单的混合运算',target:'有理数运算律',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数运算律},{source:'有理数的加、减、乘、除、乘方及简单的混合运算',target:'有理数的加、减、乘、除、乘方及简单的混合运算',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的加、减、乘、除、乘方及简单的混合运算},{source:'有理数的加、减、乘、除、乘方及简单的混合运算',target:'有理数运算律',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'有理数运算律},{source:'有理数的加、减、乘、除、乘方及简单的混合运算',target:'乘方',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'乘方},{source:'乘方',target:'绝对值',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'绝对值},{source:'MathKChuzhong',target:'反证法},{source:'MathKChuzhong',target:'四边形},{source:'MathKChuzhong',target:'统计图的知识},{source:'统计图的知识',target:'频数与频率',name:'并列知识点'},{source:'MathKChuzhong',target:'频数与频率},{source:'统计图的知识',target:'统计调查的种类',name:'并列知识点'},{source:'MathKChuzhong',target:'统计调查的种类},{source:'统计图的知识',target:'个体、总体、样本、样本总量',name:'并列知识点'},{source:'MathKChuzhong',target:'个体、总体、样本、样本总量},{source:'统计图的知识',target:'统计图的知识',name:'并列知识点'},{source:'MathKChuzhong',target:'统计图的知识},{source:'MathKChuzhong',target:'概率初步},{source:'绝对值',target:'绝对值',name:'并列知识点'},{source:'MathKChuzhong',target:'绝对值},{source:'绝对值',target:'乘方',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'乘方},{source:'乘方',target:'有理数运算律',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'有理数运算律},{source:'乘方',target:'有理数的加、减、乘、除、乘方及简单的混合运算',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'有理数的加、减、乘、除、乘方及简单的混合运算},{source:'绝对值',target:'相反数',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'相反数},{source:'相反数',target:'数轴',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'数轴},{source:'MathKChuzhong',target:'因式分解的概念},{source:'MathKChuzhong',target:'方位角},{source:'MathKChuzhong',target:'合并同类项},{source:'MathKChuzhong',target:'线段的和差及线段的中点},{source:'MathKChuzhong',target:'圆},{source:'MathKChuzhong',target:'三线八角},{source:'二元一次方程（组）及解的概念',target:'二元一次方程组的应用',name:'并列知识点'},{source:'MathKChuzhong',target:'二元一次方程组的应用},{source:'二元一次方程（组）及解的概念',target:'二元一次方程（组）及解的概念',name:'并列知识点'},{source:'MathKChuzhong',target:'二元一次方程（组）及解的概念},{source:'二元一次方程（组）及解的概念',target:'二元一次方程组的解法',name:'并列知识点'},{source:'MathKChuzhong',target:'二元一次方程组的解法},{source:'方程、方程的解的有关定义',target:'等式的性质',name:'并列知识点'},{source:'MathKChuzhong',target:'等式的性质},{source:'方程、方程的解的有关定义',target:'一元一次方程的定义',name:'并列知识点'},{source:'MathKChuzhong',target:'一元一次方程的定义},{source:'方程、方程的解的有关定义',target:'列一次方程（组）解应用题的一般步骤',name:'并列知识点'},{source:'MathKChuzhong',target:'列一次方程（组）解应用题的一般步骤},{source:'方程、方程的解的有关定义',target:'一元一次方程的解法',name:'并列知识点'},{source:'MathKChuzhong',target:'一元一次方程的解法},{source:'方程、方程的解的有关定义',target:'方程、方程的解的有关定义',name:'并列知识点'},{source:'MathKChuzhong',target:'方程、方程的解的有关定义},{source:'MathKChuzhong',target:'单项式与多项式相乘},{source:'MathKChuzhong',target:'幂的乘方},{source:'MathKChuzhong',target:'二次根式},{source:'MathKChuzhong',target:'积的乘方},{source:'MathKChuzhong',target:'度、分、秒的运算},{source:'MathKChuzhong',target:'分式},{source:'MathKChuzhong',target:'旋转},{source:'MathKChuzhong',target:'三角形},{source:'MathKChuzhong',target:'用字母表示数},{source:'用字母表示数',target:'简单代数式的实际背景或几何意义',name:'并列知识点'},{source:'MathKChuzhong',target:'简单代数式的实际背景或几何意义},{source:'用字母表示数',target:'用字母表示数',name:'并列知识点'},{source:'MathKChuzhong',target:'用字母表示数},{source:'用字母表示数',target:'代数式的值',name:'并列知识点'},{source:'MathKChuzhong',target:'代数式的值},{source:'用字母表示数',target:'用代数式表示数量关系',name:'并列知识点'},{source:'MathKChuzhong',target:'用代数式表示数量关系},{source:'用字母表示数',target:'整式概念及整式的加、减',name:'并列知识点'},{source:'MathKChuzhong',target:'整式概念及整式的加、减},{source:'MathKChuzhong',target:'不等式与不等式组},{source:'初步认识几何图形（立体图形、平面图形）',target:'角的大小与度量、比较与运算',name:'并列知识点'},{source:'MathKChuzhong',target:'角的大小与度量、比较与运算},{source:'初步认识几何图形（立体图形、平面图形）',target:'直线、射线、线段的概念表示法',name:'并列知识点'},{source:'MathKChuzhong',target:'直线、射线、线段的概念表示法},{source:'初步认识几何图形（立体图形、平面图形）',target:'点、线、面、体之间的关系',name:'并列知识点'},{source:'MathKChuzhong',target:'点、线、面、体之间的关系},{source:'初步认识几何图形（立体图形、平面图形）',target:'图形的展开与折叠',name:'并列知识点'},{source:'MathKChuzhong',target:'图形的展开与折叠},{source:'初步认识几何图形（立体图形、平面图形）',target:'初步认识几何图形（立体图形、平面图形）',name:'并列知识点'},{source:'MathKChuzhong',target:'初步认识几何图形（立体图形、平面图形）},{source:'MathKChuzhong',target:'一次函数},{source:'个体、总体、样本、样本总量',target:'频数与频率',name:'并列知识点'},{source:'MathKChuzhong',target:'频数与频率},{source:'个体、总体、样本、样本总量',target:'统计调查的种类',name:'并列知识点'},{source:'MathKChuzhong',target:'统计调查的种类},{source:'个体、总体、样本、样本总量',target:'统计图的知识',name:'并列知识点'},{source:'MathKChuzhong',target:'统计图的知识},{source:'个体、总体、样本、样本总量',target:'个体、总体、样本、样本总量',name:'并列知识点'},{source:'MathKChuzhong',target:'个体、总体、样本、样本总量},{source:'MathKChuzhong',target:'相似图形、相似多边形的概念},{source:'MathKChuzhong',target:'多项式除以单项式},{source:'点、线、面、体之间的关系',target:'角的大小与度量、比较与运算',name:'并列知识点'},{source:'MathKChuzhong',target:'角的大小与度量、比较与运算},{source:'点、线、面、体之间的关系',target:'直线、射线、线段的概念表示法',name:'并列知识点'},{source:'MathKChuzhong',target:'直线、射线、线段的概念表示法},{source:'点、线、面、体之间的关系',target:'点、线、面、体之间的关系',name:'并列知识点'},{source:'MathKChuzhong',target:'点、线、面、体之间的关系},{source:'点、线、面、体之间的关系',target:'图形的展开与折叠',name:'并列知识点'},{source:'MathKChuzhong',target:'图形的展开与折叠},{source:'点、线、面、体之间的关系',target:'初步认识几何图形（立体图形、平面图形）',name:'并列知识点'},{source:'MathKChuzhong',target:'初步认识几何图形（立体图形、平面图形）},{source:'MathKChuzhong',target:'有理数},{source:'MathKChuzhong',target:'平面直角坐标系},{source:'MathKChuzhong',target:'完全平方公式},{source:'MathKChuzhong',target:'数据的收集、整理与描述},{source:'数轴',target:'科学记数法',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'科学记数法},{source:'数轴',target:'相反数',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'相反数},{source:'数轴',target:'有理数的大小比较',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'有理数的大小比较},{source:'相反数',target:'绝对值',name:'后继知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'绝对值},{source:'MathKChuzhong',target:'一元二次方程},{source:'MathKChuzhong',target:'相似三角形的周长与面积},{source:'MathKChuzhong',target:'频数直方图},{source:'MathKChuzhong',target:'轴对称},{source:'代数式的值',target:'简单代数式的实际背景或几何意义',name:'并列知识点'},{source:'MathKChuzhong',target:'简单代数式的实际背景或几何意义},{source:'代数式的值',target:'用字母表示数',name:'并列知识点'},{source:'MathKChuzhong',target:'用字母表示数},{source:'代数式的值',target:'用代数式表示数量关系',name:'并列知识点'},{source:'MathKChuzhong',target:'用代数式表示数量关系},{source:'代数式的值',target:'整式概念及整式的加、减',name:'并列知识点'},{source:'MathKChuzhong',target:'整式概念及整式的加、减},{source:'代数式的值',target:'代数式的值',name:'并列知识点'},{source:'MathKChuzhong',target:'代数式的值},{source:'MathKChuzhong',target:'图形的认识},{source:'MathKChuzhong',target:'单项式除以单项式},{source:'MathKChuzhong',target:'二元一次方程组},{source:'一元一次方程的定义',target:'等式的性质',name:'并列知识点'},{source:'MathKChuzhong',target:'等式的性质},{source:'一元一次方程的定义',target:'方程、方程的解的有关定义',name:'并列知识点'},{source:'MathKChuzhong',target:'方程、方程的解的有关定义},{source:'一元一次方程的定义',target:'列一次方程（组）解应用题的一般步骤',name:'并列知识点'},{source:'MathKChuzhong',target:'列一次方程（组）解应用题的一般步骤},{source:'一元一次方程的定义',target:'一元一次方程的解法',name:'并列知识点'},{source:'MathKChuzhong',target:'一元一次方程的解法},{source:'一元一次方程的定义',target:'一元一次方程的定义',name:'并列知识点'},{source:'MathKChuzhong',target:'一元一次方程的定义},{source:'简单代数式的实际背景或几何意义',target:'用字母表示数',name:'并列知识点'},{source:'MathKChuzhong',target:'用字母表示数},{source:'简单代数式的实际背景或几何意义',target:'代数式的值',name:'并列知识点'},{source:'MathKChuzhong',target:'代数式的值},{source:'简单代数式的实际背景或几何意义',target:'用代数式表示数量关系',name:'并列知识点'},{source:'MathKChuzhong',target:'用代数式表示数量关系},{source:'简单代数式的实际背景或几何意义',target:'整式概念及整式的加、减',name:'并列知识点'},{source:'MathKChuzhong',target:'整式概念及整式的加、减},{source:'简单代数式的实际背景或几何意义',target:'简单代数式的实际背景或几何意义',name:'并列知识点'},{source:'MathKChuzhong',target:'简单代数式的实际背景或几何意义},{source:'MathKChuzhong',target:'余角和补角},{source:'MathKChuzhong',target:'相似三角形的判定方法及其测量中的应用},{source:'MathKChuzhong',target:'相似},{source:'MathKChuzhong',target:'提公因式法},{source:'用代数式表示数量关系',target:'简单代数式的实际背景或几何意义',name:'并列知识点'},{source:'MathKChuzhong',target:'简单代数式的实际背景或几何意义},{source:'用代数式表示数量关系',target:'用字母表示数',name:'并列知识点'},{source:'MathKChuzhong',target:'用字母表示数},{source:'用代数式表示数量关系',target:'代数式的值',name:'并列知识点'},{source:'MathKChuzhong',target:'代数式的值},{source:'用代数式表示数量关系',target:'用代数式表示数量关系',name:'并列知识点'},{source:'MathKChuzhong',target:'用代数式表示数量关系},{source:'用代数式表示数量关系',target:'整式概念及整式的加、减',name:'并列知识点'},{source:'MathKChuzhong',target:'整式概念及整式的加、减},{source:'MathKChuzhong',target:'证明的意义和证明的必要性，综合法证明的格式},{source:'图形的展开与折叠',target:'角的大小与度量、比较与运算',name:'并列知识点'},{source:'MathKChuzhong',target:'角的大小与度量、比较与运算},{source:'图形的展开与折叠',target:'直线、射线、线段的概念表示法',name:'并列知识点'},{source:'MathKChuzhong',target:'直线、射线、线段的概念表示法},{source:'图形的展开与折叠',target:'点、线、面、体之间的关系',name:'并列知识点'},{source:'MathKChuzhong',target:'点、线、面、体之间的关系},{source:'图形的展开与折叠',target:'图形的展开与折叠',name:'并列知识点'},{source:'MathKChuzhong',target:'图形的展开与折叠},{source:'图形的展开与折叠',target:'初步认识几何图形（立体图形、平面图形）',name:'并列知识点'},{source:'MathKChuzhong',target:'初步认识几何图形（立体图形、平面图形）},{source:'有理数的大小比较',target:'有理数的运算',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的运算},{source:'有理数的大小比较',target:'有理数的概念',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的概念},{source:'有理数的大小比较',target:'科学记数法',name:'并列知识点'},{source:'MathKChuzhong',target:'科学记数法},{source:'有理数的大小比较',target:'相反数',name:'并列知识点'},{source:'MathKChuzhong',target:'相反数},{source:'有理数的大小比较',target:'有理数的大小比较',name:'并列知识点'},{source:'MathKChuzhong',target:'有理数的大小比较},{source:'有理数的大小比较',target:'数轴',name:'前序知识点',lineStyle: {normal: { curveness: 0.2 }}},{source:'MathKChuzhong',target:'数轴},{source:'二元一次方程组的应用',target:'二元一次方程（组）及解的概念',name:'并列知识点'},{source:'MathKChuzhong',target:'二元一次方程（组）及解的概念},{source:'二元一次方程组的应用',target:'二元一次方程组的解法',name:'并列知识点'},{source:'MathKChuzhong',target:'二元一次方程组的解法},{source:'二元一次方程组的应用',target:'二元一次方程组的应用',name:'并列知识点'},{source:'MathKChuzhong',target:'二元一次方程组的应用},{source:'等式的性质',target:'一元一次方程的定义',name:'并列知识点'},{source:'MathKChuzhong',target:'一元一次方程的定义},{source:'等式的性质',target:'等式的性质',name:'并列知识点'},{source:'MathKChuzhong',target:'等式的性质},{source:'等式的性质',target:'列一次方程（组）解应用题的一般步骤',name:'并列知识点'},{source:'MathKChuzhong',target:'列一次方程（组）解应用题的一般步骤},{source:'等式的性质',target:'一元一次方程的解法',name:'并列知识点'},{source:'MathKChuzhong',target:'一元一次方程的解法},{source:'等式的性质',target:'方程、方程的解的有关定义',name:'并列知识点'},{source:'MathKChuzhong',target:'方程、方程的解的有关定义},{source:'MathKChuzhong',target:'圆周角定理及其推论},{source:'MathKChuzhong',target:'三角形的外接圆、外心},{source:'一元一次方程的解法',target:'等式的性质',name:'并列知识点'},{source:'MathKChuzhong',target:'等式的性质},{source:'一元一次方程的解法',target:'方程、方程的解的有关定义',name:'并列知识点'},{source:'MathKChuzhong',target:'方程、方程的解的有关定义},{source:'一元一次方程的解法',target:'列一次方程（组）解应用题的一般步骤',name:'并列知识点'},{source:'MathKChuzhong',target:'列一次方程（组）解应用题的一般步骤},{source:'一元一次方程的解法',target:'一元一次方程的定义',name:'并列知识点'},{source:'MathKChuzhong',target:'一元一次方程的定义},{source:'一元一次方程的解法',target:'一元一次方程的解法',name:'并列知识点'},{source:'MathKChuzhong',target:'一元一次方程的解法},{source:'科学记数法',target:'有理数的概念',name:'relatedBook关系'},{source:'有理数的概念',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'科学记数法',target:'有理数',name:'relatedBook关系'},{source:'有理数',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'数轴',target:'有理数的概念',name:'relatedBook关系'},{source:'有理数的概念',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'数轴',target:'数轴、相反数和绝对值',name:'relatedBook关系'},{source:'数轴、相反数和绝对值',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'有理数的加、减、乘、除、乘方及简单的混合运算',target:'有理数的加减法',name:'relatedBook关系'},{source:'有理数的加减法',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'有理数的加、减、乘、除、乘方及简单的混合运算',target:'有理数的乘除法',name:'relatedBook关系'},{source:'有理数的乘除法',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'有理数的加、减、乘、除、乘方及简单的混合运算',target:'有理数的乘方',name:'relatedBook关系'},{source:'有理数的乘方',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'有理数的乘方',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'有理数的加、减、乘、除、乘方及简单的混合运算',target:'有理数',name:'relatedBook关系'},{source:'有理数',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'一元一次方程的定义',target:'从算式到方程',name:'relatedBook关系'},{source:'从算式到方程',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'一元一次方程的定义',target:'一元一次方程及其解法',name:'relatedBook关系'},{source:'一元一次方程及其解法',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'线段的和差及线段的中点',target:'线段、射线、直线',name:'relatedBook关系'},{source:'线段、射线、直线',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'线段的和差及线段的中点',target:'直线、射线、线段',name:'relatedBook关系'},{source:'直线、射线、线段',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'有理数运算律',target:'有理数的加减法',name:'relatedBook关系'},{source:'有理数的加减法',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'有理数运算律',target:'有理数的乘除法',name:'relatedBook关系'},{source:'有理数的乘除法',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'有理数运算律',target:'有理数的乘方',name:'relatedBook关系'},{source:'有理数的乘方',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'有理数的乘方',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'有理数运算律',target:'有理数',name:'relatedBook关系'},{source:'有理数',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'方位角',target:'角',name:'relatedBook关系'},{source:'角',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'角',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'频数直方图',target:'用统计图描述数据',name:'relatedBook关系'},{source:'用统计图描述数据',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'频数直方图',target:'从图表中的数据获取信息',name:'relatedBook关系'},{source:'从图表中的数据获取信息',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'二元一次方程（组）及解的概念',target:'二元一次方程组及其解法',name:'relatedBook关系'},{source:'二元一次方程组及其解法',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'角的和差',target:'角',name:'relatedBook关系'},{source:'角',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'角',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'去括号（添括号）',target:'整式的加减',name:'relatedBook关系'},{source:'整式的加减',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'去括号（添括号）',target:'整式',name:'relatedBook关系'},{source:'整式',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'去括号（添括号）',target:'去括号、添括号',name:'relatedBook关系'},{source:'去括号、添括号',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'代数式的值',target:'整式',name:'relatedBook关系'},{source:'整式',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'代数式的值',target:'代数式的值',name:'relatedBook关系'},{source:'代数式的值',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'合并同类项',target:'整式的加减',name:'relatedBook关系'},{source:'整式的加减',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'合并同类项',target:'整式',name:'relatedBook关系'},{source:'整式',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'合并同类项',target:'合并同类项',name:'relatedBook关系'},{source:'合并同类项',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'乘方',target:'有理数的概念',name:'relatedBook关系'},{source:'有理数的概念',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'乘方',target:'有理数',name:'relatedBook关系'},{source:'有理数',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'点、线、面、体之间的关系',target:'几何图形',name:'relatedBook关系'},{source:'几何图形',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'几何图形',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'二元一次方程组的应用',target:'二元一次方程组的应用',name:'relatedBook关系'},{source:'二元一次方程组的应用',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'余角和补角',target:'角的比较与补（余）角',name:'relatedBook关系'},{source:'角的比较与补（余）角',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'余角和补角',target:'角',name:'relatedBook关系'},{source:'角',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'角',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'初步认识几何图形（立体图形、平面图形）',target:'几何图形',name:'relatedBook关系'},{source:'几何图形',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'几何图形',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'度、分、秒的运算',target:'角',name:'relatedBook关系'},{source:'角',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'角',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'列一次方程（组）解应用题的一般步骤',target:'解一元一次方程（二）——去括号与去分母',name:'relatedBook关系'},{source:'解一元一次方程（二）——去括号与去分母',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'列一次方程（组）解应用题的一般步骤',target:'解一元一次方程（一）——合并同类项与移项',name:'relatedBook关系'},{source:'解一元一次方程（一）——合并同类项与移项',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'列一次方程（组）解应用题的一般步骤',target:'从算式到方程',name:'relatedBook关系'},{source:'从算式到方程',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'列一次方程（组）解应用题的一般步骤',target:'一元一次方程的应用',name:'relatedBook关系'},{source:'一元一次方程的应用',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'一元一次方程的解法',target:'解一元一次方程（二）——去括号与去分母',name:'relatedBook关系'},{source:'解一元一次方程（二）——去括号与去分母',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'一元一次方程的解法',target:'解一元一次方程（一）——合并同类项与移项',name:'relatedBook关系'},{source:'解一元一次方程（一）——合并同类项与移项',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'一元一次方程的解法',target:'从算式到方程',name:'relatedBook关系'},{source:'从算式到方程',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'一元一次方程的解法',target:'一元一次方程及其解法',name:'relatedBook关系'},{source:'一元一次方程及其解法',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'个体、总体、样本、样本总量',target:'从图表中的数据获取信息',name:'relatedBook关系'},{source:'从图表中的数据获取信息',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'简单代数式的实际背景或几何意义',target:'整式',name:'relatedBook关系'},{source:'整式',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'简单代数式的实际背景或几何意义',target:'代数式',name:'relatedBook关系'},{source:'代数式',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'方程、方程的解的有关定义',target:'从算式到方程',name:'relatedBook关系'},{source:'从算式到方程',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'方程、方程的解的有关定义',target:'一元一次方程及其解法',name:'relatedBook关系'},{source:'一元一次方程及其解法',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'二元一次方程组的解法',target:'三元一次方程组及其解法',name:'relatedBook关系'},{source:'三元一次方程组及其解法',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'有理数的大小比较',target:'有理数的概念',name:'relatedBook关系'},{source:'有理数的概念',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'有理数的大小比较',target:'有理数的大小',name:'relatedBook关系'},{source:'有理数的大小',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'线段的比较',target:'线段的长短比较',name:'relatedBook关系'},{source:'线段的长短比较',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'线段的比较',target:'直线、射线、线段',name:'relatedBook关系'},{source:'直线、射线、线段',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'用字母表示数',target:'用字母表示数',name:'relatedBook关系'},{source:'用字母表示数',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'用字母表示数',target:'整式',name:'relatedBook关系'},{source:'整式',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'直线、射线、线段的概念表示法',target:'几何图形',name:'relatedBook关系'},{source:'几何图形',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'几何图形',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'绝对值',target:'有理数的概念',name:'relatedBook关系'},{source:'有理数的概念',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'绝对值',target:'数轴、相反数和绝对值',name:'relatedBook关系'},{source:'数轴、相反数和绝对值',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'用代数式表示数量关系',target:'整式',name:'relatedBook关系'},{source:'整式',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'用代数式表示数量关系',target:'代数式',name:'relatedBook关系'},{source:'代数式',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'等式的性质',target:'从算式到方程',name:'relatedBook关系'},{source:'从算式到方程',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'等式的性质',target:'一元一次方程及其解法',name:'relatedBook关系'},{source:'一元一次方程及其解法',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'相反数',target:'有理数的概念',name:'relatedBook关系'},{source:'有理数的概念',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'相反数',target:'数轴、相反数和绝对值',name:'relatedBook关系'},{source:'数轴、相反数和绝对值',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'统计图的知识',target:'数据的整理',name:'relatedBook关系'},{source:'数据的整理',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'统计图的知识',target:'数据的收集',name:'relatedBook关系'},{source:'数据的收集',target:'MathBookHK2014Chuzhong',name:'属于'},{source:'两点间的距离',target:'直线、射线、线段',name:'relatedBook关系'},{source:'直线、射线、线段',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'图形的展开与折叠',target:'几何图形',name:'relatedBook关系'},{source:'几何图形',target:'MathBookRJ2014Chuzhong',name:'属于'},{source:'几何图形',target:'MathBookHK2014Chuzhong',name:'属于'}],
+            /*
+        links: [{
+         source: 'node01',
+         target: 'node02',
+         name: 'link01',
+         des: 'link01des'
+         }], */
+            categories: categories,
+        }]
+    };
+
+    /* setTimeout(()=> {
+myChart.setOption(option);
+}, 500) ; */
+    echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
+    var myChart = echarts.init(document.getElementById('dom'));//构建下一个实例
+    myChart.setOption(option);
+    $(".active.ui.inverted.dimmer").hide();
+
+
+</script>
+
+<script>
+    $(".menu.toggle").click(function () {
+        $(".m-item").toggleClass("m-mobile-hide");
+    });
+    $('.ui.dropdown').dropdown({
+        on: 'hover'//鼠标移上去就触发
+    });
+</script>
+</body>
+</html>

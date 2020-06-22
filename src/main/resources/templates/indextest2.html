@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>时代在线</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css?1}">
+</head>
+<body>
+<!--导航-->
+<nav class="ui inverted attached  segment m-padded-td-mini m-shadow-small">
+    <div class="ui container ">
+        <div class="ui inverted secondary stackable menu">
+            <h2 class="ui teal header item">时代在线</h2>
+            <!--            <a  class="active m-item item m-mobile-hide"><i class="home icon"></i>首页</a>-->
+            <a th:href="@{/1}" class=" m-item item m-mobile-hide">教育属性</a>
+            <a th:href="@{/2}" class="active m-item item m-mobile-hide">教材体系</a>
+            <a th:href="@{/3}" class=" m-item item m-mobile-hide">知识点体系</a>
+            <a th:href="@{/4}" class="  m-item item m-mobile-hide">知识图谱</a>
+            <a th:href="@{/5}" class=" m-item item m-mobile-hide">单个教材体系</a>
+
+        </div>
+    </div>
+    <a href="#" class="ui menu toggle button black m-right-top m-mobile-show">
+        <i class="sidebar icon"></i>
+    </a>
+</nav>
+
+<!--中间内容-->
+<div class="m-padded-tb-big m-container-mini">
+    <div class="ui grid">
+        <div class=" wide column">
+            <!--header-->
+            <div class="ui segment top attached">
+                <div class="ui grid  column center aligned">
+                    <div class="column">
+                        <h3 class="ui teal header">教材体系展示</h3>
+                    </div>
+                </div>
+            </div>
+            <!--content--->
+            <div class="ui attached segment">
+                <div class="ui   segment vertical">
+                    <div class="ui middle aligned mobile reversed stackable grid">
+                        <div id="dom" class="m-div">
+                            <div class=" active ui inverted dimmer">
+                                <div class="ui text loader">图像渲染中</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--底部footer-->
+<footer class="ui inverted segment vertical m-padded-tb-massive">
+    <div class="ui center aligned container">
+        <div class="ui grid divided stackable inverted">
+            <div class="three wide  column">
+                <h4 class="ui inverted header">关于</h4>
+            </div>
+            <div class="three wide  column">
+                <h4 class="ui inverted header">地址</h4>
+                <p>安徽省合肥市</p>
+            </div>
+            <div class="three wide  column">
+                <h4 class="ui inverted header">...</h4>
+            </div>
+            <div class="seven wide column">
+                <h4 class="ui inverted header"></h4>
+                <p>@2020</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <p class="m-text-thin m-text-spaced">邮编：231131 电话：xxx QQ：885515333 E-mail：885515333@qq.com</p>
+    </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@4.7.0/dist/echarts.min.js"></script>
+<!--<script src="../static/js/echarts.js" th:src="@{/js/echarts.js}"></script>-->
+<script>
+    $.ajax({
+        url: "/TextbookSystem",
+        type: "POST",
+        dataType: "json",
+        success: function (result) {
+            eval("var data=" + result["NOTE"]);
+            eval("var link=" + result["LINK"]);
+            // data = jQuery.parseJSON(datass);  //dataType指明了返回数据为json类型，故不需要再反序列化
+            // link = jQuery.parseJSON(linkss);  //dataType指明了返回数据为json类型，故不需要再反序列化
+            var myChart = echarts.init(document.getElementById('dom'));
+            var categories = [];
+            categories[0] = {
+                name: '当前搜索'
+            };
+            categories[1] = {
+                name: '教材版本'
+            };
+            categories[2] = {
+                name: '章节'
+            };
+
+            /* for (var i = 0; i < 3; i++) {
+            categories[i] = {
+                name: '类目' + i
+            };
+        } */
+            option = {
+                // 图的标题
+                title: {
+                    text: ''
+                },
+                // 提示框的配置
+                tooltip: {
+                    formatter: function (x) {
+                        return x.data.des;
+                    }
+                },
+                // 工具箱
+                toolbox: {
+                    // 显示工具箱
+                    show: true,
+                    feature: {
+                        mark: {
+                            show: true
+                        },
+                        // 还原
+                        restore: {
+                            show: true
+                        },
+                        // 保存为图片
+                        saveAsImage: {
+                            show: true
+                        }
+                    }
+                },
+                legend: [{
+                    // selectedMode: 'single',
+                    data: categories.map(function (a) {
+                        return a.name;
+                    })
+                }],
+                series: [{
+                    type: 'graph', // 类型:关系图
+                    layout: 'force', //图的布局，类型为力导图
+                    symbolSize: 40, // 调整节点的大小
+                    roam: true, // 是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移,可以设置成 'scale' 或者 'move'。设置成 true 为都开启
+                    legendHoverLink: true,//是否启用图例 hover(悬停) 时的联动高亮。
+                    hoverAnimation: false,//是否开启鼠标悬停节点的显示动画
+                    edgeSymbol: ['circle', 'arrow'],
+                    edgeSymbolSize: [2, 10],
+                    edgeLabel: {
+                        normal: {
+                            textStyle: {
+                                fontSize: 20
+                            }
+                        }
+                    },
+                    force: {
+                        repulsion: 1500,
+                        edgeLength: 100,
+                        layoutAnimation: false,//因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
+                    },
+                    draggable: true,
+                    focusNodeAdjacency: true,//是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。
+                    lineStyle: {
+                        normal: {
+                            width: 4,
+                            color: '#4b565b',
+                        }
+                    },
+                    edgeLabel: {
+                        normal: {
+                            show: true,
+                            formatter: function (x) {
+                                return x.data.name;
+                            }
+                        }
+                    },
+                    label: {
+                        normal: {
+                            show: true,
+                            textStyle: {}
+                        }
+                    },
+                    // 数据
+                    data: data,
+                    links: link,
+                    /*
+                links: [{
+                 source: 'node01',
+                 target: 'node02',
+                 name: 'link01',
+                 des: 'link01des'
+                 }], */
+                    categories: categories,
+                }]
+            };
+
+            /* setTimeout(()=> {
+        myChart.setOption(option);
+        }, 500) ; */
+            echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
+            var myChart = echarts.init(document.getElementById('dom'));//构建下一个实例
+            myChart.setOption(option);
+            $(".active.ui.inverted.dimmer").hide();
+            myChart.on('click', function (params) {
+                zhi = params.name;
+                search();
+            });
+        }
+    });
+
+</script>
+
+<script>
+    $(".menu.toggle").click(function () {
+        $(".m-item").toggleClass("m-mobile-hide");
+    });
+    $('.ui.dropdown').dropdown({
+        on: 'hover'//鼠标移上去就触发
+    });
+</script>
+</body>
+</html>

@@ -235,12 +235,12 @@
                             }
                         },
                         force: {
-                            repulsion: 2000,
-                            edgeLength: [10, 50],
-                            layoutAnimation: true,//因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
+                            repulsion: 1500,
+                            edgeLength: 100,
+                            layoutAnimation: false,//因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
                         },
                         draggable: true,
-                        //focusNodeAdjacency : true,
+                        focusNodeAdjacency : true,//是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。
                         lineStyle: {
                             normal: {
                                 width: 4,
@@ -380,7 +380,7 @@ function initialize() {
                         layoutAnimation: false,//因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
                     },
                     draggable: true,
-                    //focusNodeAdjacency : true,
+                    focusNodeAdjacency : true,
                     lineStyle: {
                         normal: {
                             width: 4,
