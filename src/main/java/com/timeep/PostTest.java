@@ -26,16 +26,16 @@ public class PostTest {
         CloseableHttpClient client = HttpClients.createDefault();
 //实例化一个post对象
 //        HttpPost post = new HttpPost("http://36.7.147.134:18080/search");
-//        HttpPost post = new HttpPost("http://47.96.231.239:8080/search");
-        HttpPost post = new HttpPost("http://127.0.0.1:8080/search");
+        HttpPost post = new HttpPost("http://47.96.231.239:8080/search");
+//        HttpPost post = new HttpPost("http://127.0.0.1:8080/search");
 //  使用NameValuePair将发送的参数打包
         List<NameValuePair> list = new ArrayList<NameValuePair>();
 //打包
-        list.add(new BasicNameValuePair("flag", "1"));
+        list.add(new BasicNameValuePair("flag", "3"));
         list.add(new BasicNameValuePair("relation", "all"));
-//        list.add(new BasicNameValuePair("query", "MathBookHK2014Chuzhong"));
-//        list.add(new BasicNameValuePair("query", "MathKChuzhong"));
-//        list.add(new BasicNameValuePair("query", ""));
+        list.add(new BasicNameValuePair("query", "MathBookHK2014Chuzhong"));//2
+//        list.add(new BasicNameValuePair("query", "MathKChuzhong"));//3
+//        list.add(new BasicNameValuePair("query", null));
 
 
 //使用URLEncodedFormEntity工具类实现一个entity对象,并使用NameValuePair中的数据进行初始化

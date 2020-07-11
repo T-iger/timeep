@@ -1003,7 +1003,6 @@ public class OwlServiceImpl implements OwlService {
                 if (hashSet.add(subject)) {
                     note.append("{" + "name:'" + subject + "',des:'" + subject + "',symbolSize:50,category:1" + "},");
                     link.append("{" + "source:'" + query + "',target:'" + subject + "},");
-
                 }
                 if (!isSiblingofOwlList.isEmpty()) {
                     for (Owl owl : isSiblingofOwlList) {

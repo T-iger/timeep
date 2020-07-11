@@ -1,13 +1,22 @@
 package com.timeep.controller;
 
 import com.timeep.service.OwlService;
+import com.timeep.service.VersionService;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -18,6 +27,8 @@ import java.util.List;
 public class EchartsController {
     @Autowired
     private OwlService owlService;
+    @Autowired
+    private VersionService versionService;
 
     @GetMapping("timeep")
     public String hello(Model model) {
@@ -127,7 +138,7 @@ public class EchartsController {
     }
 
     @PostMapping("RETextbookSystem")
-    public ResponseEntity<?> RETextbookSystem(Model model,@RequestParam("X")String X) {
+    public ResponseEntity<?> RETextbookSystem(Model model, @RequestParam("X") String X) {
 
         return ResponseEntity.ok(owlService.TextbookSystem(X));
     }
@@ -137,7 +148,6 @@ public class EchartsController {
     public ResponseEntity<?> KnowledgePointSystem(Model model) {
         return ResponseEntity.ok(owlService.findAllKnowledgePointSystem("Thing"));
     }
-
 
 
     @PostMapping("search")
@@ -158,9 +168,9 @@ public class EchartsController {
                 return ResponseEntity.ok(false);
             }
         } else if (flag == 3) {//知识点体系
-            if ("all".equals(relation)&&query!=null) {
+            if ("all".equals(relation) && query != "") {
                 return ResponseEntity.ok(owlService.findKnowledgePointSystem(query));
-            } else if ("all".equals(relation)&&query==null) {
+            } else if ("all".equals(relation) && query == "") {
                 return ResponseEntity.ok(owlService.findAllKnowledgePointSystem("Thing"));
             } else {
                 return ResponseEntity.ok(false);
@@ -169,7 +179,7 @@ public class EchartsController {
             //query= 知识点
             if ("all".equals(relation)) {
                 return ResponseEntity.ok(owlService.findKnowledgeGraph(query));
-            }else{
+            } else {
                 return ResponseEntity.ok(false);
             }
         } else {
@@ -177,6 +187,29 @@ public class EchartsController {
         }
     }
 
+   /* @GetMapping("/upload")
+    public String load(Model model) throws IOException {
+        model.addAttribute("allVersion",versionService.findAll());
+
+        return "indextest6";
+    }
+
+    @PostMapping("/upload")
+    @ResponseBody
+    public String upload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return "上传失败，请选择文件";
+        }
+        String fileName = file.getOriginalFilename();
+        String filePath = "D:\\IDEA\\timeep\\src\\main\\resources\\upload\\";
+        File dest = new File(filePath + fileName);
+        try {
+            file.transferTo(dest);
+            return "上传成功";
+        } catch (IOException e) {
+        }
+        return "上传失败！";
+    }*/
 
 
 }
