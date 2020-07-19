@@ -1,0 +1,9 @@
+
+@include <RDFS>.
+@include <OWL>.
+[rule1:(?x http://www.semanticweb.org/cheny/ontologies/2020/4/math#hasPostK ?y)(?x http://www.semanticweb.org/cheny/ontologies/2020/4/math#hasPostK ?z)->(?y http://www.semanticweb.org/cheny/ontologies/2020/4/math#isSiblingof ?z)]
+[rule2:(?x http://www.semanticweb.org/cheny/ontologies/2020/4/math#hasRefK ?y)->(?y http://www.semanticweb.org/cheny/ontologies/2020/4/math#hasPostK ?x)]
+[rule3:(?x http://www.semanticweb.org/cheny/ontologies/2020/4/math#hasPostK ?y)->(?y http://www.semanticweb.org/cheny/ontologies/2020/4/math#hasRefK ?x)]
+[rule4:(?x http://www.semanticweb.org/cheny/ontologies/2020/4/math#hasDirectPart ?y)(?x http://www.semanticweb.org/cheny/ontologies/2020/4/math#hasDirectPart ?z)->(?y http://www.semanticweb.org/cheny/ontologies/2020/4/math#isSiblingof ?z)]
+[rule5:(?x http://www.w3.org/1999/02/22-rdf-syntax-ns#type http://www.semanticweb.org/cheny/ontologies/2020/4/math#MathBookHK2014Chuzhong)->(?x http://www.semanticweb.org/cheny/ontologies/2020/4/math#refertoBookVersion http://www.semanticweb.org/cheny/ontologies/2020/4/math#初中数学沪科版)]
+

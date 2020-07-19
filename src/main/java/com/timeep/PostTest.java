@@ -26,14 +26,22 @@ public class PostTest {
         CloseableHttpClient client = HttpClients.createDefault();
 //实例化一个post对象
 //        HttpPost post = new HttpPost("http://36.7.147.134:18080/search");
-        HttpPost post = new HttpPost("http://47.96.231.239:8080/search");
+//        HttpPost post = new HttpPost("http://47.96.231.239:8080/search");
+        HttpPost post = new HttpPost("http://47.96.231.239:8081/demo/deleteNodeInstance");
 //        HttpPost post = new HttpPost("http://127.0.0.1:8080/search");
 //  使用NameValuePair将发送的参数打包
         List<NameValuePair> list = new ArrayList<NameValuePair>();
+
+
 //打包
-        list.add(new BasicNameValuePair("flag", "3"));
-        list.add(new BasicNameValuePair("relation", "all"));
-        list.add(new BasicNameValuePair("query", "MathBookHK2014Chuzhong"));//2
+//        list.add(new BasicNameValuePair("flag", "3"));
+//        list.add(new BasicNameValuePair("relation", "all"));
+//        list.add(new BasicNameValuePair("query", "MathBookHK2014Chuzhong"));//2
+        list.add(new BasicNameValuePair("id", "2020-07-03"));
+        list.add(new BasicNameValuePair("type", "2"));
+        list.add(new BasicNameValuePair("name", "WANGJIE"));
+        list.add(new BasicNameValuePair("className", "Person"));
+
 //        list.add(new BasicNameValuePair("query", "MathKChuzhong"));//3
 //        list.add(new BasicNameValuePair("query", null));
 

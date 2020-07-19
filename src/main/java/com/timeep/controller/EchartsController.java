@@ -1,22 +1,15 @@
 package com.timeep.controller;
 
 import com.timeep.service.OwlService;
-import com.timeep.service.VersionService;
-import org.apache.commons.io.IOUtils;
+import com.timeep.service.TempService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,7 +21,7 @@ public class EchartsController {
     @Autowired
     private OwlService owlService;
     @Autowired
-    private VersionService versionService;
+    private TempService tempService;
 
     @GetMapping("timeep")
     public String hello(Model model) {
@@ -211,5 +204,17 @@ public class EchartsController {
         return "上传失败！";
     }*/
 
+   @PostMapping("update")
+    public ResponseEntity<?> update(@RequestParam(value = "time",required = false) Date time,@RequestParam("do") int d,@RequestParam("version")String version){
+       long startTime = System.currentTimeMillis();
+       boolean b = tempService.update();
+       long finishTime = System.currentTimeMillis();
+       System.out.println("总耗时:" + (finishTime - startTime)/1000 );
+       if (b) {
+           return ResponseEntity.ok(true);
+       }else {
+           return ResponseEntity.ok(false);
+       }
+   }
 
 }
