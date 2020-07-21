@@ -9,7 +9,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -130,19 +133,22 @@ public class EchartsController {
         return ResponseEntity.ok(owlService.findTextbookSystem("MathBookHK2014Chuzhong"));
     }
 
-    @PostMapping("RETextbookSystem")
-    public ResponseEntity<?> RETextbookSystem(Model model, @RequestParam("X") String X) {
-
-        return ResponseEntity.ok(owlService.TextbookSystem(X));
-    }
-
-
     @PostMapping("KnowledgePointSystem")
     public ResponseEntity<?> KnowledgePointSystem(Model model) {
         return ResponseEntity.ok(owlService.findAllKnowledgePointSystem("Thing"));
     }
 
 
+    /*-----------以下为出版社所需接口、传输数据为post方式、数据为form-data格式----------------*/
+    /*定位查询教材体系
+     * @Param X (为教材版本,章节)
+     * */
+    @PostMapping("RETextbookSystem")
+    public ResponseEntity<?> RETextbookSystem(Model model, @RequestParam("X") String X) {
+        return ResponseEntity.ok(owlService.TextbookSystem(X));
+    }
+
+    /*数据查询接口*/
     @PostMapping("search")
     public ResponseEntity<?> Search(@RequestParam("flag") int flag,//查询类型
                                     @RequestParam(value = "relation", required = false) String relation,//查询关系
@@ -180,6 +186,32 @@ public class EchartsController {
         }
     }
 
+    /*知识图谱版本更新*/
+    @PostMapping("update")
+    public ResponseEntity<?> update(@RequestParam(value = "time", required = false) Date time, @RequestParam("do") int d, @RequestParam("version") String version) {
+        long startTime = System.currentTimeMillis();
+        boolean b = tempService.update();
+        long finishTime = System.currentTimeMillis();
+        System.out.println("总耗时:" + (finishTime - startTime) / 1000);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");//设置日期格式
+        HashMap<String, String> map = new HashMap<>();
+        map.put("time", df.format(new Date()));
+        map.put("version", version);
+        if (b) {
+            map.put("do", "1");
+            return ResponseEntity.ok(map);
+        } else {
+            map.put("do", "0");
+            return ResponseEntity.ok(map);
+        }
+    }
+
+    /*列表查询的数据（知识点的前后序，拥有层数控制）*/
+    @PostMapping("findlist")
+    public ResponseEntity<?> findList(@RequestParam("knowledge") String knowledge, @RequestParam("number") int number) {
+        return ResponseEntity.ok(owlService.findIsSiblingOfAndRefK(knowledge, number));
+    }
+
    /* @GetMapping("/upload")
     public String load(Model model) throws IOException {
         model.addAttribute("allVersion",versionService.findAll());
@@ -204,17 +236,5 @@ public class EchartsController {
         return "上传失败！";
     }*/
 
-   @PostMapping("update")
-    public ResponseEntity<?> update(@RequestParam(value = "time",required = false) Date time,@RequestParam("do") int d,@RequestParam("version")String version){
-       long startTime = System.currentTimeMillis();
-       boolean b = tempService.update();
-       long finishTime = System.currentTimeMillis();
-       System.out.println("总耗时:" + (finishTime - startTime)/1000 );
-       if (b) {
-           return ResponseEntity.ok(true);
-       }else {
-           return ResponseEntity.ok(false);
-       }
-   }
 
 }

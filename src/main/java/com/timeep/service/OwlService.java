@@ -27,6 +27,8 @@ public interface OwlService {
 
    HashMap<String,String> findTextbookSystem(String subject);//查询教材体系
 
+
+
    HashMap<String,String> findAllTextbookSystem(String subject);//查询所有的教材体系
 
    HashMap<String,String> TextbookSystem(String subject);//再次查询教材体系
@@ -38,6 +40,8 @@ public interface OwlService {
    HashMap<String,String> findKnowledgePointSystem(String subject);//查询知识点体系
 
     HashMap<String, String> findKnowledgeGraph(String subject);//查询知识图谱
+
+    HashMap<String, String> findIsSiblingOfAndRefK(String subject,int number);//查询前序和后继和参考知识点
 
 
 }
