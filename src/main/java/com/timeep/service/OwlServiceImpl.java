@@ -1356,8 +1356,6 @@ public class OwlServiceImpl implements OwlService {
                                                     note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":1" + "},");
                                                     link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
                                                     link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-                                                    ;
-
                                                 } else if (!owl.getSubject().equals(owl.getObject())) {
                                                     link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2 }}},");
                                                     link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
@@ -1726,7 +1724,8 @@ public class OwlServiceImpl implements OwlService {
             LinkedHashSet<String> count = new LinkedHashSet<>();
             count.addAll(hasPostSet);
             if (countPost < number) {
-                loop: while (!count.isEmpty()) {
+                loop:
+                while (!count.isEmpty()) {
                     String next = count.iterator().next();
                     count.remove(next);
                     List<Owl> owls = owlRepository.findByPropertyAndSubject("hasPostK", next);
@@ -1772,7 +1771,8 @@ public class OwlServiceImpl implements OwlService {
             LinkedHashSet<String> count = new LinkedHashSet<>();
             count.addAll(hasPreKSet);
             if (countPreK < number) {
-                loop: while (!count.isEmpty()) {
+                loop:
+                while (!count.isEmpty()) {
                     String next = count.iterator().next();
                     count.remove(next);
                     List<Owl> owls = owlRepository.findByPropertyAndSubject("hasPreK", next);
