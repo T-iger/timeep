@@ -90,8 +90,8 @@
         type: "POST",
         dataType: "json",
         success: function (result) {
-            eval("var data=" + result["NOTE"]);
-            eval("var link=" + result["LINK"]);
+            /*eval("var data=" + result["NOTE"]);
+            eval("var link=" + result["LINK"]);*/
             // data = jQuery.parseJSON(datass);  //dataType指明了返回数据为json类型，故不需要再反序列化
             // link = jQuery.parseJSON(linkss);  //dataType指明了返回数据为json类型，故不需要再反序列化
             var myChart = echarts.init(document.getElementById('dom'));
@@ -190,8 +190,8 @@
                         }
                     },
                     // 数据
-                    data: data,
-                    links: link,
+                    data: result.NOTE,
+                    links: result.LINK,
                     /*
                 links: [{
                  source: 'node01',

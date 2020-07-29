@@ -2,6 +2,7 @@ package com.timeep.controller;
 
 import com.timeep.service.OwlService;
 import com.timeep.service.TempService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -9,7 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.text.DateFormat;
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.List;
  **/
 @Controller
 @RequestMapping("/")
+
 public class EchartsController {
     @Autowired
     private OwlService owlService;
@@ -84,8 +86,8 @@ public class EchartsController {
 
     @PostMapping("hasPreK")
     public ResponseEntity<?> findHasPreK(Model model, @RequestParam("find") String find) {
-        return ResponseEntity.ok(owlService.findKnowledgeGraph("所有"));
-//        return ResponseEntity.ok(owlService.findHasPreK(find));
+//        return ResponseEntity.ok(owlService.findKnowledgeGraph("所有"));
+        return ResponseEntity.ok(owlService.findHasPreK(find));
     }
 
     @PostMapping("hasAllEducationProperty")
@@ -150,91 +152,89 @@ public class EchartsController {
 
     /*数据查询接口*/
     @PostMapping("search")
-    public ResponseEntity<?> Search(@RequestParam("flag") int flag,//查询类型
-                                    @RequestParam(value = "relation", required = false) String relation,//查询关系
-                                    @RequestParam(value = "query", required = false) String query//被查询数据
-    ) {
-        if (flag == 1 && "all".equals(relation)) {//教育属性
-            //query=初中数学人教版
-            return ResponseEntity.ok(owlService.findAllEducationProperty("Thing"));
-        } else if (flag == 2) {//教材体系
-            // query=MathBookHK2014Chuzhong
-            if ("all".equals(relation)) {
-                return ResponseEntity.ok(owlService.findAllTextbookSystem("Thing"));
-            } else if ("single".equals(relation)) {
-                return ResponseEntity.ok(owlService.findTextbookSystem(query));
+    public ResponseEntity<?> Search(@RequestBody String params) {
+        try {
+            JSONObject jsonObject = new JSONObject(params);
+            int flag = jsonObject.getInt("flag");//查询类型
+            String relation = jsonObject.getString("relation");//查询关系
+            String query = jsonObject.getString("query");//被查询数据
+            if (flag == 1 && "all".equals(relation)) {//教育属性
+                //query=初中数学人教版
+                return ResponseEntity.ok(owlService.findAllEducationProperty("Thing"));
+            } else if (flag == 2) {//教材体系
+                // query=MathBookHK2014Chuzhong
+                if ("all".equals(relation)) {
+                    return ResponseEntity.ok(owlService.findAllTextbookSystem("Thing"));
+                } else if ("single".equals(relation)) {
+                    return ResponseEntity.ok(owlService.findTextbookSystem(query));
+                } else {
+                    return ResponseEntity.ok(false);
+                }
+            } else if (flag == 3) {//知识点体系
+                if ("all".equals(relation) && !query.equals("")) {
+                    return ResponseEntity.ok(owlService.findKnowledgePointSystem(query));
+                } else if ("all".equals(relation) && query.equals("")) {
+                    return ResponseEntity.ok(owlService.findAllKnowledgePointSystem("Thing"));
+                } else {
+                    return ResponseEntity.ok(false);
+                }
+            } else if ("1".equals(flag)) {//知识图谱
+                //query= 知识点
+                if ("all".equals(relation)) {
+                    return ResponseEntity.ok(owlService.findKnowledgeGraph(query));
+                } else {
+                    return ResponseEntity.ok(false);
+                }
             } else {
                 return ResponseEntity.ok(false);
             }
-        } else if (flag == 3) {//知识点体系
-            if ("all".equals(relation) && query != "") {
-                return ResponseEntity.ok(owlService.findKnowledgePointSystem(query));
-            } else if ("all".equals(relation) && query == "") {
-                return ResponseEntity.ok(owlService.findAllKnowledgePointSystem("Thing"));
-            } else {
-                return ResponseEntity.ok(false);
-            }
-        } else if (flag == 4) {//知识图谱
-            //query= 知识点
-            if ("all".equals(relation)) {
-                return ResponseEntity.ok(owlService.findKnowledgeGraph(query));
-            } else {
-                return ResponseEntity.ok(false);
-            }
-        } else {
-            return ResponseEntity.ok(false);
+        } catch (RuntimeException re) {
+            return ResponseEntity.ok("{\"msg\":\"异常\"}");
+        } catch (Exception e) {
+            return ResponseEntity.ok("{\"msg\":\"异常\"}");
         }
     }
 
     /*知识图谱版本更新*/
     @PostMapping("update")
-    public ResponseEntity<?> update(@RequestParam(value = "time", required = false) Date time, @RequestParam("do") int d, @RequestParam("version") String version) {
-        long startTime = System.currentTimeMillis();
-        boolean b = tempService.update();
-        long finishTime = System.currentTimeMillis();
-        System.out.println("总耗时:" + (finishTime - startTime) / 1000);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");//设置日期格式
+    public ResponseEntity<?> update(@RequestBody String params) {
         HashMap<String, String> map = new HashMap<>();
-        map.put("time", df.format(new Date()));
-        map.put("version", version);
-        if (b) {
-            map.put("do", "1");
+        try {
+            JSONObject jsonObject = new JSONObject(params);
+            String time = jsonObject.getString("time");//查询类型
+            int d = jsonObject.getInt("do");//查询类型
+            String version = jsonObject.getString("version");//查询类型
+
+            long startTime = System.currentTimeMillis();
+            boolean b = tempService.update();
+            long finishTime = System.currentTimeMillis();
+            System.out.println("总耗时:" + (finishTime - startTime) / 1000);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");//设置日期格式
+            map.put("time", df.format(new Date()));
+            map.put("version", version);
+            if (b) {
+                map.put("do", "1");
+                return ResponseEntity.ok(map);
+            } else {
+                map.put("do", "0");
+                return ResponseEntity.ok(map);
+            }
+        } catch (RuntimeException re) {
+            map.put("msg", "异常");
             return ResponseEntity.ok(map);
-        } else {
-            map.put("do", "0");
+        } catch (Exception e) {
+            map.put("msg", "异常");
             return ResponseEntity.ok(map);
         }
     }
 
     /*列表查询的数据（知识点的前后序，拥有层数控制）*/
     @PostMapping("findlist")
-    public ResponseEntity<?> findList(@RequestParam("knowledge") String knowledge, @RequestParam("number") int number) {
-        return ResponseEntity.ok(owlService.findIsSiblingOfAndRefK(knowledge, number));
+    public ResponseEntity<?> findList(@RequestBody String params) {
+            JSONObject jsonObject = new JSONObject(params);
+            String knowledge = jsonObject.getString("knowledge");//查询类型
+            int number = jsonObject.getInt("number");//查询类型
+            return ResponseEntity.ok(owlService.findIsSiblingOfAndRefK(knowledge, number));
     }
-
-   /* @GetMapping("/upload")
-    public String load(Model model) throws IOException {
-        model.addAttribute("allVersion",versionService.findAll());
-
-        return "indextest6";
-    }
-
-    @PostMapping("/upload")
-    @ResponseBody
-    public String upload(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return "上传失败，请选择文件";
-        }
-        String fileName = file.getOriginalFilename();
-        String filePath = "D:\\IDEA\\timeep\\src\\main\\resources\\upload\\";
-        File dest = new File(filePath + fileName);
-        try {
-            file.transferTo(dest);
-            return "上传成功";
-        } catch (IOException e) {
-        }
-        return "上传失败！";
-    }*/
-
 
 }

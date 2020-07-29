@@ -9,9 +9,14 @@ import java.util.List;
  * @author Li
  **/
 public interface OwlRepository extends JpaRepository<Owl ,Long> {
+
     List<Owl> findByPropertyAndObject(String property,String object);
 
+    /*关于object的模糊查询*/
     List<Owl> findByPropertyAndObjectContaining(String property,String object);
+
+    /*关于subject的模糊查询*/
+    List<Owl> findByPropertyAndSubjectContaining(String property,String subject);
 
     List<Owl> findByPropertyAndSubject(String property,String subject);
 

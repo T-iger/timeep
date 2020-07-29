@@ -25,23 +25,23 @@ public interface OwlService {
    /* HashMap<String,String> findHasPreK(String object);//*/
    HashMap<String,String> findEducationProperty(String subject);//查询教育属性
 
-   HashMap<String,String> findTextbookSystem(String subject);//查询教材体系
+   StringBuilder findTextbookSystem(String subject);//查询教材体系
 
 
 
-   HashMap<String,String> findAllTextbookSystem(String subject);//查询所有的教材体系
+   StringBuilder findAllTextbookSystem(String subject);//查询所有的教材体系
 
-   HashMap<String,String> TextbookSystem(String subject);//再次查询教材体系
+   StringBuilder TextbookSystem(String subject);//再次查询教材体系
 
-   HashMap<String,String> findAllEducationProperty(String subject);//查询所有教育属性
+   StringBuilder findAllEducationProperty(String subject);//查询所有教育属性
 
-   HashMap<String,String> findAllKnowledgePointSystem(String subject);//查询所有的知识点体系
+   StringBuilder findAllKnowledgePointSystem(String subject);//查询所有的知识点体系
 
-   HashMap<String,String> findKnowledgePointSystem(String subject);//查询知识点体系
+   StringBuilder findKnowledgePointSystem(String subject);//查询知识点体系
 
-    HashMap<String, String> findKnowledgeGraph(String subject);//查询知识图谱
+    StringBuilder findKnowledgeGraph(String subject);//查询知识图谱
 
-    HashMap<String, String> findIsSiblingOfAndRefK(String subject,int number);//查询前序和后继和参考知识点
+    StringBuilder findIsSiblingOfAndRefK(String subject, int number);//查询前序和后继和参考知识点
 
 
 }
