@@ -20,4 +20,9 @@ public interface OwlRepository extends JpaRepository<Owl ,Long> {
 
     List<Owl> findByPropertyAndSubject(String property,String subject);
 
+    /*模糊查询关系*/
+    List<Owl> findByPropertyContainingAndSubject(String property,String subject);
+
+
+
 }

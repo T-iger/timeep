@@ -28,14 +28,14 @@ public class ReasonerRuleTest {
 		Model m = ModelFactory.createDefaultModel();
 		Resource configuration = m.createResource();
 		configuration.addProperty(ReasonerVocabulary.PROPruleMode, "hybrid");
-		configuration.addProperty(ReasonerVocabulary.PROPruleSet, "C:/Users/88551/Desktop/mathv3.1.rules");
+		configuration.addProperty(ReasonerVocabulary.PROPruleSet, "C:/Users/88551/Desktop/mathv4.1.rules");
 
 		// Create an instance of such a reasoner
 		Reasoner reasoner = GenericRuleReasonerFactory.theInstance().create(configuration);
 
 		// Load test data
 		// Model data = FileManager.get().loadModel("file:expert/demodata.ttl");
-		Model data = FileManager.get().loadModel("file:C:/Users/88551/Desktop/mathv4.0.owl");
+		Model data = FileManager.get().loadModel("file:C:/Users/88551/Desktop/mathv4.1.owl");
 		InfModel infmodel = ModelFactory.createInfModel(reasoner, data);
 
 		// Query for all things related to "a" by "p"
@@ -45,8 +45,8 @@ public class ReasonerRuleTest {
 		StmtIterator i = infmodel.listStatements();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-//			String url = "jdbc:mysql://localhost:3306/ontologyir?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC";
-			String url = "jdbc:mysql://47.96.231.239:3306/ontologyir?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC";
+			String url = "jdbc:mysql://localhost:3306/ontologyir?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC";
+//			String url = "jdbc:mysql://47.96.231.239:3306/ontologyir?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC";
 			String user = "root";
 			String password = "root";
 			con = DriverManager.getConnection(url, user, password);

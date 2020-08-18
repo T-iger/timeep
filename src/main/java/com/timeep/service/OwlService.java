@@ -43,5 +43,8 @@ public interface OwlService {
 
     StringBuilder findIsSiblingOfAndRefK(String subject, int number);//查询前序和后继和参考知识点
 
+    StringBuilder findAllTextbookSystemAndEducationProperty(String subject);//再次查询教材体系和教育属性之间的关系
+
+
 
 }

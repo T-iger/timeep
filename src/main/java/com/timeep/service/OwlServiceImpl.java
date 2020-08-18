@@ -833,7 +833,7 @@ public class OwlServiceImpl implements OwlService {
         String subject = null;
         note.append("[{\"name\":\"" + query + "\",\"des\":\"" + query + "\",\"symbolSize\":60,\"category\":0" + "},");
         link.append("[");
-        List<Owl> first = owlRepository.findByPropertyAndObject("equivalentClass", query);
+        List<Owl> first = owlRepository.findByPropertyAndObject("equivalentClass", query+"知识点");
         if (!first.isEmpty()) {
             for (Owl owl : first) {
                 subject = owl.getSubject();
@@ -1016,7 +1016,7 @@ public class OwlServiceImpl implements OwlService {
     }
 
     /*查询所有的知识点体系(旧)*/
-   /* @Override
+    /* @Override
     public HashMap<String, String> findAllKnowledgePointSystem(String subject) {
         HashMap<String, String> hashMap = new HashMap<>();
         StringBuilder note = new StringBuilder();
@@ -1814,6 +1814,58 @@ public class OwlServiceImpl implements OwlService {
         note.append("\"qx\":[" + pre + "],\"hx\":[" + post + "],\"ck\":[" + ref + "]}");
 
         return note;
+    }
+
+    /*查询所有的教材体系*/
+    @Override
+    public StringBuilder findAllTextbookSystemAndEducationProperty(String query) {
+        HashMap<String, String> hashMap = new HashMap<>();
+        StringBuilder note = new StringBuilder();
+        StringBuilder link = new StringBuilder();
+        LinkedHashSet<String> hashSet = new LinkedHashSet<>();
+        note.append("[{\"name\":\"" + query + "\",\"des\":\"" + query + "\",\"symbolSize\":60,\"category\":0" + "},");
+        link.append("[");
+        List<Owl> owlListAll = owlRepository.findByPropertyAndObjectContaining("type", "Book");
+        if (!owlListAll.isEmpty()) {
+            for (Owl owl : owlListAll) {
+                if (hashSet.add(owl.getObject())) {
+                    note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":60,\"category\":1" + "},");
+                    link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + query + "\",\"name\":\"属于\"" + "},");
+                }
+                if (hashSet.add(owl.getSubject())) {
+                    note.append("{\"name\":\"" + owl.getSubject() + "\",\"des\":\"" + owl.getSubject() + "\",\"symbolSize\":60,\"category\":2},");
+                    link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + owl.getSubject() + "\",\"name\":\"属于\"},");
+                }
+                List<Owl> relations = owlRepository.findByPropertyContainingAndSubject("referto", owl.getSubject());
+                if(!relations.isEmpty()){
+                    for (Owl relationOwl : relations) {
+                        if (hashSet.add(relationOwl.getObject())) {
+                            note.append("{\"name\":\"" + relationOwl.getObject() + "\",\"des\":\"" + relationOwl.getObject() + "\",\"symbolSize\":60,\"category\":3" + "},");
+                            link.append("{\"source\":\"" + relationOwl.getSubject() + "\",\"target\":\"" + relationOwl.getObject() + "\",\"name\":\"教育属性\"" + "},");
+                        }else{
+                            link.append("{\"source\":\"" + relationOwl.getSubject() + "\",\"target\":\"" + relationOwl.getObject() + "\",\"name\":\"教育属性\"" + "},");
+                        }
+                    }
+                }
+            }
+        }
+        if (note.toString().endsWith(",")) {
+            StringBuilder note1 = new StringBuilder();
+            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append("]");
+            note = note1;
+        }
+        if (link.toString().endsWith(",")) {
+            StringBuilder link1 = new StringBuilder();
+            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append("]");
+            link = link1;
+        } else {
+            link.append("]");
+        }
+        StringBuilder result = new StringBuilder();
+        result.append("{\"NOTE\":" + note + ",\"LINK\":" + link + "}");
+        return result;
     }
 }
 

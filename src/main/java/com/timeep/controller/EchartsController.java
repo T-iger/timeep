@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,6 +39,11 @@ public class EchartsController {
         List<String> zhiShiDian = owlService.findZhiShiDian();
         model.addAttribute("zhishidianList", zhiShiDian);
         return "index2";
+    }
+
+    @GetMapping("6")
+    public String p6(Model model) {
+        return "indextest6";
     }
 
     @GetMapping("5")
@@ -138,6 +142,11 @@ public class EchartsController {
     @PostMapping("KnowledgePointSystem")
     public ResponseEntity<?> KnowledgePointSystem(Model model) {
         return ResponseEntity.ok(owlService.findAllKnowledgePointSystem("Thing"));
+    }
+
+    @PostMapping("findAllTextbookSystemAndEducationProperty")
+    public ResponseEntity<?> findAllTextbookSystemAndEducationProperty(Model model) {
+        return ResponseEntity.ok(owlService.findAllTextbookSystemAndEducationProperty("Thing"));
     }
 
 

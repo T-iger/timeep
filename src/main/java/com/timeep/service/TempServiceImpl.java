@@ -21,6 +21,7 @@ public class TempServiceImpl implements TempService {
     private TempRepository tempRepository;
     @Autowired
     private OwlRepository owlRepository;
+
     @Override
     public boolean update() {
         tempRepository.deleteAll();

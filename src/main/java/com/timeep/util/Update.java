@@ -27,7 +27,7 @@ public class Update {
         Model m = ModelFactory.createDefaultModel();
         Resource configuration = m.createResource();
         configuration.addProperty(ReasonerVocabulary.PROPruleMode, "hybrid");
-        configuration.addProperty(ReasonerVocabulary.PROPruleSet, "mathv3.1.rules");
+        configuration.addProperty(ReasonerVocabulary.PROPruleSet, "mathv4.1.rules");
 
         // Create an instance of such a reasoner
         Reasoner reasoner = GenericRuleReasonerFactory.theInstance().create(configuration);
@@ -35,7 +35,7 @@ public class Update {
         // Load test data
         // Model data = FileManager.get().loadModel("file:expert/demodata.ttl");
 
-        Model data = FileManager.get().loadModel("mathv4.0.owl");
+        Model data = FileManager.get().loadModel("/opt/wangjie/owlapi/owlapi/src/main/resources/jena/mathv4.1.owl");
         InfModel infmodel = ModelFactory.createInfModel(reasoner, data);
 
         // Query for all things related to "a" by "p"
