@@ -1,8 +1,10 @@
 package com.timeep.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.timeep.service.OwlService;
 import com.timeep.service.TempService;
-import org.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -141,6 +143,7 @@ public class EchartsController {
 
     @PostMapping("KnowledgePointSystem")
     public ResponseEntity<?> KnowledgePointSystem(Model model) {
+//        return ResponseEntity.ok(owlService.findKnowledgePointSystem("初中数学@有理数"));
         return ResponseEntity.ok(owlService.findAllKnowledgePointSystem("Thing"));
     }
 
@@ -163,14 +166,19 @@ public class EchartsController {
     @PostMapping("search")
     public ResponseEntity<?> Search(@RequestBody String params) {
         try {
-            JSONObject jsonObject = new JSONObject(params);
-            int flag = jsonObject.getInt("flag");//查询类型
-            String relation = jsonObject.getString("relation");//查询关系
-            String query = jsonObject.getString("query");//被查询数据
-            if (flag == 1 && "all".equals(relation)) {//教育属性
+            JSONObject jsonObject = JSON.parseObject(params);
+            //查询类型
+            int flag = jsonObject.getInteger("flag");
+            //查询关系
+            String relation = jsonObject.getString("relation");
+            //被查询数据
+            String query = jsonObject.getString("query");
+            //教育属性
+            if (flag == 1 && "all".equals(relation)) {
                 //query=初中数学人教版
                 return ResponseEntity.ok(owlService.findAllEducationProperty("Thing"));
-            } else if (flag == 2) {//教材体系
+            } else if (flag == 2) {
+                //教材体系
                 // query=MathBookHK2014Chuzhong
                 if ("all".equals(relation)) {
                     return ResponseEntity.ok(owlService.findAllTextbookSystem("Thing"));
@@ -209,9 +217,9 @@ public class EchartsController {
     public ResponseEntity<?> update(@RequestBody String params) {
         HashMap<String, String> map = new HashMap<>();
         try {
-            JSONObject jsonObject = new JSONObject(params);
+            JSONObject jsonObject = JSON.parseObject(params);
             String time = jsonObject.getString("time");//查询类型
-            int d = jsonObject.getInt("do");//查询类型
+            int d = jsonObject.getInteger("do");//查询类型
             String version = jsonObject.getString("version");//查询类型
 
             long startTime = System.currentTimeMillis();
@@ -240,10 +248,10 @@ public class EchartsController {
     /*列表查询的数据（知识点的前后序，拥有层数控制）*/
     @PostMapping("findlist")
     public ResponseEntity<?> findList(@RequestBody String params) {
-            JSONObject jsonObject = new JSONObject(params);
-            String knowledge = jsonObject.getString("knowledge");//查询类型
-            int number = jsonObject.getInt("number");//查询类型
-            return ResponseEntity.ok(owlService.findIsSiblingOfAndRefK(knowledge, number));
+        JSONObject jsonObject = JSON.parseObject(params);
+        String knowledge = jsonObject.getString("knowledge");//查询类型
+        int number = jsonObject.getInteger("number");//查询层数
+        return ResponseEntity.ok(owlService.findIsSiblingOfAndRefK(knowledge, number));
     }
 
 }
