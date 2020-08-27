@@ -6,8 +6,6 @@ import org.apache.jena.reasoner.rulesys.GenericRuleReasonerFactory;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.ReasonerVocabulary;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ReasonerRule111 {
     public static void main(String[] args) {
@@ -33,14 +31,10 @@ public class ReasonerRule111 {
 
             //处理数据subject
             String subject = stmt.getSubject().toString();
-            if (subject!=null){
-                if (stmt.getSubject().toString().startsWith("[0-9]")){
-                    break;
-                }else{
-                     subject = stmt.getSubject().toString().split("#")[1];
-                }
+            if (subject!=null&&stmt.getSubject().toString().split("#").length>1){
+                    subject = stmt.getSubject().toString().split("#")[1];
             }else{
-                break;
+                continue ;
             }
             System.out.println(subject);
 
@@ -49,16 +43,10 @@ public class ReasonerRule111 {
             System.out.println(property);
             //截取object字段
             String object = stmt.getObject().toString();
-            if (object!=null){
-                Pattern pattern = Pattern.compile("[0-9]*");
-                Matcher isNum = pattern.matcher(object.charAt(0)+"");
-                if (isNum.matches()){
-                    break;
-                }else{
+            if (object!=null&&stmt.getObject().toString().split("#").length>1){
                     object = stmt.getObject().toString().split("#")[1];
-                }
             }else{
-                break;
+                continue ;
             }
             System.out.println(object);
         }

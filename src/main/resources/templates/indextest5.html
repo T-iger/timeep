@@ -191,20 +191,10 @@
                     // 数据
                     data: result.NOTE,
                     links: result.LINK,
-                    /*
-                links: [{
-                 source: 'node01',
-                 target: 'node02',
-                 name: 'link01',
-                 des: 'link01des'
-                 }], */
                     categories: categories,
                 }]
             };
 
-            /* setTimeout(()=> {
-        myChart.setOption(option);
-        }, 500) ; */
             echarts.init(document.getElementById('dom')).dispose();//销毁前一个实例
             var myChart = echarts.init(document.getElementById('dom'));//构建下一个实例
             myChart.setOption(option);

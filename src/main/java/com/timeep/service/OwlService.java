@@ -45,6 +45,7 @@ public interface OwlService {
 
     StringBuilder findAllTextbookSystemAndEducationProperty(String subject);//再次查询教材体系和教育属性之间的关系
 
+    Boolean reasoning();
 
 
 }

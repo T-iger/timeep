@@ -17,11 +17,6 @@ import org.apache.jena.vocabulary.ReasonerVocabulary;
 
 public class ReasonerRuleTest {
 	public static void main(String[] args) {
-		// Register a namespace for use in the demo
-		// String demoURI = "http://jena.hpl.hp.com/demo#";
-		// PrintUtil.registerPrefix("demo", demoURI);
-		// Create an (RDF) specification of a hybrid reasoner which
-		// loads its data from an external file.
 
 		Connection con = null;
 		PreparedStatement pstm = null;
@@ -35,7 +30,7 @@ public class ReasonerRuleTest {
 
 		// Load test data
 		// Model data = FileManager.get().loadModel("file:expert/demodata.ttl");
-		Model data = FileManager.get().loadModel("file:C:/Users/88551/Desktop/mathv4.1.owl");
+		Model data = FileManager.get().loadModel("file:C:/Users/88551/Desktop/mathv4.2.owl");
 		InfModel infmodel = ModelFactory.createInfModel(reasoner, data);
 
 		// Query for all things related to "a" by "p"
