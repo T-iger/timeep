@@ -211,7 +211,7 @@ public class EchartsController {
                 } else {
                     return ResponseEntity.ok(false);
                 }
-            } else if ("1".equals(flag)) {
+            } else if (flag == 4) {
                 //知识图谱
                 //query= 知识点
                 if ("all".equals(relation)) {

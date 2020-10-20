@@ -289,18 +289,47 @@ public class MainServiceImpl implements MainService {
         HashSet<String> hashSet = new HashSet<>();
         String subject = null;
         String[] knowledge = query.split("@");
+        // 此时有@，即查询该教材体系下的知识点
         if (knowledge.length > 1) {
             subject = knowledge[1];
             hashSet.add(subject);
             note.append("[{\"name\":\"" + knowledge[1] + "\",\"des\":\"" + knowledge[1] + "\",\"symbolSize\":60,\"category\":0" + "},");
             link.append("[");
             List<Owl> isSiblingofOwlList = new ArrayList<>();
+            List<Owl> hasPostKOwlList = new ArrayList<>();
+            List<Owl> hasPreKOwlList = new ArrayList<>();
+            List<Owl> hasRefKOwlList = new ArrayList<>();
+            // 标识是否存在，0不存在，1存在
+            Integer exist=0;
             for (Owl owl : data) {
-                //
+                // isSiblingof
                 if (owl.getProperty().equals("isSiblingof") && owl.getSubject().equals(subject)) {
                     isSiblingofOwlList.add(owl);
                 }
+                // hasPostK
+                if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(subject)) {
+                    hasPostKOwlList.add(owl);
+                }
+                //hasPreK查询
+                if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(subject)) {
+                    hasPreKOwlList.add(owl);
+                }
+                //hasRefKOwlList
+                if (owl.getProperty().equals("hasRefKOwlList") && owl.getSubject().equals(subject)) {
+                    hasRefKOwlList.add(owl);
+                }
+                if (owl.getSubject().equals(subject)||owl.getObject().equals(subject)){
+                    exist++;
+                }
             }
+            if (exist==0){
+                StringBuilder none = new StringBuilder();
+                StringBuilder result = new StringBuilder();
+                none.append("[{\"name\":\"无:" + knowledge[1] + "知识点\",\"des\":\"" + knowledge[1] + "\",\"symbolSize\":60,\"category\":0" + "}]");
+                result.append("{\"NOTE\":" + none + ",\"LINK\":[]}");
+                return none;
+            }
+            // 兄弟知识点
             if (!isSiblingofOwlList.isEmpty()) {
                 for (Owl owl : isSiblingofOwlList) {
                     if (hashSet.add(owl.getObject())) {
@@ -311,15 +340,19 @@ public class MainServiceImpl implements MainService {
                     }
                 }
             }
-
-            /*查询hasPostK*/
-            List<Owl> hasPostKOwlList = new ArrayList<>();
-            for (Owl owl : data) {
-                //
-                if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(subject)) {
-                    hasPostKOwlList.add(owl);
+            // 参考知识点
+            if (!hasRefKOwlList.isEmpty()) {
+                for (Owl owl : hasRefKOwlList) {
+                    if (hashSet.add(owl.getObject())) {
+                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":1" + "},");
+                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"参考知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.3 }}},");
+                    } else {
+                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"参考知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.3 }}},");
+                    }
                 }
             }
+
+            /*查询hasPostK*/
             HashSet<String> hasPostSet = new HashSet<>();
             if (!hasPostKOwlList.isEmpty()) {
                 for (Owl owl : hasPostKOwlList) {
@@ -367,13 +400,6 @@ public class MainServiceImpl implements MainService {
             }
 
             /*hasPreK查询*/
-            List<Owl> hasPreKOwlList = new ArrayList<>();
-            for (Owl owl : data) {
-                //hasPreK查询
-                if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(subject)) {
-                    hasPreKOwlList.add(owl);
-                }
-            }
             HashSet<String> hasPreKSet = new HashSet<>();
             if (!hasPreKOwlList.isEmpty()) {
                 for (Owl owl : hasPreKOwlList) {
@@ -464,6 +490,8 @@ public class MainServiceImpl implements MainService {
                     }
                 }
             }
+
+
             if (note.toString().endsWith(",")) {
                 StringBuilder note1 = new StringBuilder();
                 note1.append(note.toString().substring(0, note.length() - 1));
@@ -1007,11 +1035,22 @@ public class MainServiceImpl implements MainService {
         note.append("[{\"name\":\"Thing\",\"des\":\"Thing\",\"symbolSize\":60,\"category\":0" + "},");
         link.append("[");
         List<Owl> owlList1 = new ArrayList<>();
+        Integer exist=0;
         for (Owl owl : data) {
             //
             if (owl.getProperty().equals("subClassOf") && owl.getObject().equals("教育基础属性")) {
                 owlList1.add(owl);
             }
+            if (owl.getSubject().equals(subject)||owl.getObject().equals(subject)){
+                exist++;
+            }
+        }
+        if (exist==0){
+            StringBuilder none = new StringBuilder();
+            StringBuilder result = new StringBuilder();
+            none.append("[{\"name\":\"无:" + subject + "知识点\",\"des\":\"" + subject + "\",\"symbolSize\":60,\"category\":0" + "}]");
+            result.append("{\"NOTE\":" + none + ",\"LINK\":[]}");
+            return result;
         }
         hashSet.add("教育基础属性");
         note.append("{\"name\":\"教育基础属性\",\"des\":\"教育基础属性\",\"symbolSize\":60,\"category\":0" + "},");
@@ -1574,7 +1613,7 @@ public class MainServiceImpl implements MainService {
             Reasoner reasoner = GenericRuleReasonerFactory.theInstance().create(configuration);
             //本体文件加载
 //            Model data = FileManager.get().loadModel("/opt/wangjie/owlapi/owlapi/src/main/resources/jena/mathv4.2.owl");
-            Model data = FileManager.get().loadModel("/opt/owlapi/src/main/resources/jena/mathv4.2.owl");
+            Model data = FileManager.get().loadModel("/opt/owl/owlapi/src/main/resources/jena/mathv4.2.owl");
 //            Model data = FileManager.get().loadModel("C:/Users/88551/Desktop/mathv4.2.owl");
             //
             InfModel infmodel = ModelFactory.createInfModel(reasoner, data);
