@@ -60,7 +60,7 @@ public class OwlServiceImpl implements OwlService {
         List<Owl> owlList = new ArrayList<>();
         for (Owl owl : data) {
             //查询关于初中数学的知识点
-            if (owl.getProperty().equals("type")&&owl.getObject().equals("MathKChuzhong")) {
+            if (owl.getProperty().equals("type")&&owl.getObject().startsWith("MathK")) {
                 owlList.add(owl);
             }
         }

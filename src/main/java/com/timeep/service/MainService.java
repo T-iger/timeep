@@ -81,4 +81,11 @@ public interface MainService {
      * @return
      */
     Boolean reasoning();
+
+    /**
+     * 获取学科
+     * @param subject
+     * @return
+     */
+    Integer  getSubject(String subject);
 }

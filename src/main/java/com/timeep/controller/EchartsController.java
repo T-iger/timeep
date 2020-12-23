@@ -23,7 +23,6 @@ import java.util.List;
  **/
 @Controller
 @RequestMapping("/")
-
 public class EchartsController {
     @Autowired
     private OwlService owlService;
@@ -32,11 +31,11 @@ public class EchartsController {
     @Autowired
     private MainService mainService;
 
-    @GetMapping("timeep")
+    @GetMapping()
     public String hello(Model model) {
         List<String> zhiShiDian = owlService.findZhiShiDian();
         model.addAttribute("zhishidianList", zhiShiDian);
-        return "index";
+        return "index2";
     }
 
     @GetMapping("test")
@@ -114,6 +113,12 @@ public class EchartsController {
         return ResponseEntity.ok(owlService.findAll(find));
     }
 
+    @PostMapping("findTest")
+    public ResponseEntity<?> findTest(Model model, @RequestParam("find") String find) {
+        return ResponseEntity.ok(mainService.findKnowledgePointSystem("初中数学@"+find));
+//        return ResponseEntity.ok(mainService.findKnowledgePointSystem("初中数学"));
+    }
+
     /*知识点和章节的关系
     relateBook 知识点 查章节 查类名称
     relatedK 章节 查知识点*/
@@ -122,7 +127,16 @@ public class EchartsController {
         System.out.println();
         return ResponseEntity.ok(owlService.findK(find));
     }
+      /******************/
+    @PostMapping("FindKnowledgeGraph")
+    public ResponseEntity<?> FindKnowledgeGraph(@RequestParam("find") String find) {
+        return ResponseEntity.ok(mainService.findKnowledgePointSystem("小学数学@"+find));
+    }
 
+    @PostMapping("FindTextbookSystem")
+    public ResponseEntity<?> FindTextbookSystem(@RequestParam("find") String find) {
+        return ResponseEntity.ok(mainService.findTextbookSystem(find));
+    }
 
                             /**以下为展示界面接口*/
 

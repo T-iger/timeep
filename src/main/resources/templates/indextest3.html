@@ -20,7 +20,7 @@
             <a th:href="@{/4}" class="  m-item item m-mobile-hide">知识图谱</a>
             <a th:href="@{/5}" class=" m-item item m-mobile-hide">单个教材体系</a>
             <a th:href="@{/6}" class="m-item item m-mobile-hide">所有教材体系和教育属性</a>
-
+            <a th:href="@{/}" class="m-item item m-mobile-hide">基础界面</a>
         </div>
     </div>
     <a href="#" class="ui menu toggle button black m-right-top m-mobile-show">
@@ -101,17 +101,24 @@
                     name: '当前搜索'
                 };
                 categories[1] = {
-                    name: '知识点'
+                    name: '小学'
                 };
                 categories[2] = {
-                    name: '章节'
+                    name: '初中'
                 };
                 categories[3] = {
-                    name: '教材版本'
+                    name: '高中'
                 };
                 categories[4] = {
-                    name: '参考知识点'
+                    name: '书本或章节'
                 };
+                categories[5] = {
+                    name: '教育'
+                };
+                categories[6] = {
+                    name: '其他'
+                };
+
                 /* for (var i = 0; i < 3; i++) {
                 categories[i] = {
                     name: '类目' + i

@@ -42,16 +42,16 @@
 <!--导航-->
 <nav class="ui inverted attached  segment m-padded-td-mini m-shadow-small">
     <div class="ui container ">
-        <div class="ui inverted secondary stackable menu">
+        <!--<div class="ui inverted secondary stackable menu">
             <h2 class="ui teal header item">时代在线</h2>
-<!--            <a  class="active m-item item m-mobile-hide"><i class="home icon"></i>首页</a>-->
+&lt;!&ndash;            <a  class="active m-item item m-mobile-hide"><i class="home icon"></i>首页</a>&ndash;&gt;
             <a th:href="@{/1}" class=" m-item item m-mobile-hide">教育属性</a>
             <a th:href="@{/2}" class=" m-item item m-mobile-hide">教材体系</a>
             <a th:href="@{/3}" class=" m-item item m-mobile-hide">知识点体系</a>
             <a th:href="@{/4}" class="  m-item item m-mobile-hide">知识图谱</a>
             <a th:href="@{/5}" class=" m-item item m-mobile-hide">单个教材体系</a>
             <a th:href="@{/6}" class="active m-item item m-mobile-hide">知识图谱数据同步</a>
-        </div>
+        </div>-->
     </div>
     <a href="#" class="ui menu toggle button black m-right-top m-mobile-show">
         <i class="sidebar icon"></i>
@@ -76,11 +76,11 @@
                     <div class="ui middle aligned mobile reversed stackable grid">
                         <div class="ui segment">
                             <table>
-                                <tr th:each="all:${allVersion}">
+                               <!-- <tr th:each="all:${allVersion}">
                                     <td th:text="${all.version}"></td>
                                     <td th:text="${all.updateTime}"></td>
                                     <td th:text="${all.is}"></td>
-                                </tr>
+                                </tr>-->
                             </table>
                         </div>
                         <div id="dom" class="m-div">

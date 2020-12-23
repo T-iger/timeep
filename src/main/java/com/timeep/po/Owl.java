@@ -18,6 +18,7 @@ public class Owl {
     private String object;
     private String property;
     private String subject;
+    private String xd;
 
     public Owl() {
     }
@@ -52,6 +53,14 @@ public class Owl {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public String getXd() {
+        return xd;
+    }
+
+    public void setXd(String xd) {
+        this.xd = xd;
     }
 
     @Override
