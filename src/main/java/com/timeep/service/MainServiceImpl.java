@@ -318,26 +318,26 @@ public class MainServiceImpl implements MainService {
             Integer exist = 0;
             for (Owl owl : data) {
                 // isSiblingof
-                if (owl.getProperty().equals("isSiblingof") && owl.getSubject().equals(subject)) {
+                if (owl.getProperty().equals("isSiblingof") && owl.getSubject().equals(subject)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                     isSiblingofOwlList.add(owl);
                 }
                 // hasPostK
-                if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(subject)) {
+                if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(subject)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                     hasPostKOwlList.add(owl);
                 }
                 //hasPreK查询
-                if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(subject)) {
+                if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(subject)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                     hasPreKOwlList.add(owl);
                 }
 
-                if (owl.getSubject().equals(subject) || owl.getObject().equals(subject)) {
+                if (owl.getSubject().equals(subject)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd()) || owl.getObject().equals(subject)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                     exist++;
                 }
             }
             if (exist == 0) {
                 StringBuilder none = new StringBuilder();
                 StringBuilder result = new StringBuilder();
-                none.append("[{\"name\":\"无:" + knowledge[1] + "知识点\",\"des\":\"" + knowledge[1] + "\",\"symbolSize\":60,\"category\":0" + "}]");
+                none.append("[{\"name\":\"无:" + knowledge[1] + "知识点("+knowledge[0]+")\",\"des\":\"" + knowledge[1] + "\",\"symbolSize\":60,\"category\":0" + "}]");
                 result.append("{\"NOTE\":" + none + ",\"LINK\":[]}");
                 return result;
             }
@@ -383,7 +383,7 @@ public class MainServiceImpl implements MainService {
                     List<Owl> owls = new ArrayList<>();
                     for (Owl owl : data) {
                         //
-                        if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(next)) {
+                        if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(next)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                             owls.add(owl);
                         }
                     }
@@ -436,7 +436,7 @@ public class MainServiceImpl implements MainService {
                     List<Owl> owls = new ArrayList<>();
                     for (Owl owl : data) {
                         //遍历前序知识点
-                        if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(next)) {
+                        if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(next)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                             owls.add(owl);
                         }
                     }
@@ -513,7 +513,7 @@ public class MainServiceImpl implements MainService {
             //hasRefKOwlList
             for (String s : hashSet) {
                 for (Owl owl : data) {
-                    if (owl.getProperty().equals("hasRefK") && owl.getSubject().equals(s)) {
+                    if (owl.getProperty().equals("hasRefK") && owl.getSubject().equals(s)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                         hasRefKOwlList.add(owl);
                     }
                 }
@@ -582,7 +582,7 @@ public class MainServiceImpl implements MainService {
                 List<Owl> isSiblingofOwlList = new ArrayList<>();
                 for (Owl owl : data) {
                     //
-                    if (owl.getProperty().equals("isSiblingof") && owl.getSubject().equals(subject)) {
+                    if (owl.getProperty().equals("isSiblingof") && owl.getSubject().equals(subject)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                         isSiblingofOwlList.add(owl);
                     }
                 }
@@ -614,7 +614,7 @@ public class MainServiceImpl implements MainService {
                 List<Owl> hasPostKOwlList = new ArrayList<>();
                 for (Owl owl : data) {
                     //
-                    if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(subject)) {
+                    if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(subject)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                         hasPostKOwlList.add(owl);
                     }
                 }
@@ -653,7 +653,7 @@ public class MainServiceImpl implements MainService {
                         List<Owl> owls = new ArrayList<>();
                         for (Owl owl : data) {
                             //
-                            if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(next)) {
+                            if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(next)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                                 owls.add(owl);
                             }
                         }
@@ -688,7 +688,7 @@ public class MainServiceImpl implements MainService {
                 List<Owl> hasPreKOwlList = new ArrayList<>();
                 for (Owl owl : data) {
                     //
-                    if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(subject)) {
+                    if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(subject)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                         hasPreKOwlList.add(owl);
                     }
                 }
@@ -723,7 +723,7 @@ public class MainServiceImpl implements MainService {
                         List<Owl> owls = new ArrayList<>();
                         for (Owl owl : data) {
                             //
-                            if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(next)) {
+                            if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(next)&&owl.getXd()!=null&& knowledge[0].contains(owl.getXd())) {
                                 owls.add(owl);
                             }
                         }
@@ -1811,8 +1811,8 @@ public class MainServiceImpl implements MainService {
 
                 }
                 System.out.println(object);
-                //如果全是英文跳出循环
-                if (object.matches("[a-zA-Z]+") && subject.matches("[a-zA-Z]+")) {
+                //如果全是英文跳出循环,前后一样去除(去除冗余数据)
+                if (object.matches("[a-zA-Z]+") && subject.matches("[a-zA-Z]+")||owl.getSubject().equals(owl.getObject())) {
                     count--;
                     continue;
                 }
@@ -1856,7 +1856,9 @@ public class MainServiceImpl implements MainService {
                 for (Owl owl1 : all) {
                     //判断是否在库里
                     if (owl1.getObject().equals(owl.getObject()) && owl1.getSubject().equals(owl.getSubject()) && owl1.getProperty().equals(owl.getProperty())) {
-                        add = false;
+                        if (owl1.getXd()==null&&owl.getXd()==null||owl1.getXd()!=null&&owl1.getXd().equals(owl.getXd())){
+                            add = false;
+                        }
                     }
                 }
                 if (add) {
@@ -1872,7 +1874,9 @@ public class MainServiceImpl implements MainService {
                 for (Owl owl1 : owlList) {
                     //判断是否在库里
                     if (owl1.getObject().equals(owl.getObject()) && owl1.getSubject().equals(owl.getSubject()) && owl1.getProperty().equals(owl.getProperty())) {
-                        delete = false;
+                        if (owl1.getXd()==null&&owl.getXd()==null||owl1.getXd()!=null&&owl1.getXd().equals(owl.getXd())){
+                            delete = false;
+                        }
                     }
                 }
                 if (delete) {
