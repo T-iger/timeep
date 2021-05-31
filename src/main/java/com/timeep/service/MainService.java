@@ -55,14 +55,14 @@ public interface MainService {
     StringBuilder findKnowledgePointSystem(String subject);
 
     /**
-     * 查询知识图谱
+     * 查询知识图谱（在用）
      * @param subject
      * @return
      */
     StringBuilder findKnowledgeGraph(String subject);
 
     /**
-     * 查询前序和后继和参考知识点
+     * 查询前序和后继和参考知识点 （在用）
      * @param subject
      * @param number
      * @return
@@ -70,20 +70,20 @@ public interface MainService {
     StringBuilder findIsSiblingOfAndRefK(String subject, int number);
 
     /**
-     * 再次查询教材体系和教育属性之间的关系
+     * 再次查询教材体系和教育属性之间的关系 （在用）
      * @param subject
      * @return
      */
     StringBuilder findAllTextbookSystemAndEducationProperty(String subject);
 
     /**
-     * 推理功能
+     * 推理功能 （在用）
      * @return
      */
     Boolean reasoning();
 
     /**
-     * 获取学科
+     * 获取学科 （在用）
      * @param subject
      * @return
      */

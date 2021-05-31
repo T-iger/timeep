@@ -2,7 +2,7 @@ spring:
   thymeleaf:
     mode: HTML
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ontologyir?useSSL=true&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
     username: root
     password: root
@@ -16,8 +16,13 @@ spring:
 logging:
   level:
     root: info
-    com.lihu.homework: debug
+    com.timeep: debug
   file:
     name: log/timeep.log
 server:
   port: 8080
+address:
+  #owl文件地址，用于推理使用
+  owlAddress: /opt/owl/owlapi/src/main/resources/jena/mathv4.2.owl
+  #本地测试使用
+#  owlAddress: /Users/lihu/Desktop/mathv4.2.owl

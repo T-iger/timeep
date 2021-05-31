@@ -117,28 +117,33 @@ public class MainServiceImpl implements MainService {
     public StringBuilder findTextbookSystem(String subject) {
         //从redis中获取数据
         List<Owl> data = getData();
+        //存储节点信息
         StringBuilder note = new StringBuilder();
+        //存储节点的关系
         StringBuilder link = new StringBuilder();
         LinkedHashSet<String> hashSet = new LinkedHashSet<>();
         note.append("[{\"name\":\"" + subject + "\",\"des\":\"" + subject + "\",\"symbolSize\":60,\"category\":0},");
         link.append("[");
         List<Owl> owlList = new ArrayList<>();
         for (Owl owl : data) {
-            //
-            if (owl.getProperty().equals("type") && owl.getObject().equals(subject)) {
+            //查找和type相关的知识
+            if ("type".equals(owl.getProperty()) && owl.getObject().equals(subject)) {
                 owlList.add(owl);
             }
         }
+        //判断是否有数据
         if (!owlList.isEmpty()) {
+            //不为空的话构建前端数据
             for (Owl owl : owlList) {
                 if (hashSet.add(owl.getSubject())) {
                     note.append(buildComm.Build_Book_Note(owl.getSubject()));
                     link.append(buildComm.Build_Book_Link(owl.getObject(), owl.getSubject()));
-//                    note.append("{\"name\":\"" + owl.getSubject() + "\",\"des\":\"" + owl.getSubject() + "'\",\"symbolSize\":60,\"category\":1},");
-//                    link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + owl.getSubject() + "\",\"name\":\"属于\"},");
                 }
             }
         }
+        /*
+          进行数据的合法性修改，防止数据为空和最后一个数据出错
+          */
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
             note1.append(note.toString(), 0, note.length() - 1);
@@ -167,35 +172,33 @@ public class MainServiceImpl implements MainService {
     @Override
     public StringBuilder findAllTextbookSystem(String query) {
         List<Owl> data = getData();
-        HashMap<String, String> hashMap = new HashMap<>();
         StringBuilder note = new StringBuilder();
         StringBuilder link = new StringBuilder();
         LinkedHashSet<String> hashSet = new LinkedHashSet<>();
+        //增加中心节点
         note.append("[{\"name\":\"" + query + "\",\"des\":\"" + query + "\",\"symbolSize\":60,\"category\":0" + "},");
         link.append("[");
         List<Owl> owlListAll = new ArrayList<>();
         for (Owl owl : data) {
-            //
-            if (owl.getProperty().equals("type") && owl.getObject().indexOf("Book") != -1) {
+            //遍历符合条件的数据
+            if ("type".equals(owl.getProperty()) && owl.getObject().contains("Book")) {
                 owlListAll.add(owl);
             }
         }
+        //构建数据
         if (!owlListAll.isEmpty()) {
             for (Owl owl : owlListAll) {
                 if (hashSet.add(owl.getObject())) {
                     note.append(buildComm.Build_Book_Note(owl.getObject()));
                     link.append(buildComm.Build_Book_Link(owl.getObject(), query));
-//                    note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":60,\"category\":1" + "},");
-//                    link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + query + "\",\"name\":\"属于\"" + "},");
                 }
                 if (hashSet.add(owl.getSubject())) {
                     note.append(buildComm.Build_Book_Note(owl.getSubject()));
                     link.append(buildComm.Build_Book_Link(owl.getObject(), owl.getSubject()));
-//                    note.append("{\"name\":\"" + owl.getSubject() + "\",\"des\":\"" + owl.getSubject() + "\",\"symbolSize\":60,\"category\":2},");
-//                    link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + owl.getSubject() + "\",\"name\":\"属于\"},");
                 }
             }
         }
+        //合法性校验
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
             note1.append(note.toString(), 0, note.length() - 1);
@@ -227,48 +230,43 @@ public class MainServiceImpl implements MainService {
         String[] strings = subject.split(",");
         subject = strings[0];
         String zj = strings[1];
-        HashMap<String, String> hashMap = new HashMap<>();
         StringBuilder note = new StringBuilder();
         StringBuilder link = new StringBuilder();
         LinkedHashSet<String> hashSet = new LinkedHashSet<>();
         note.append("[{\"name\":\"" + subject + "\",\"des\":\"" + subject + "\",\"symbolSize\":60,\"category\":0" + "},");
         link.append("[");
         List<Owl> owlList = new ArrayList<>();
-        List<Owl> owlList1 = new ArrayList<>();
+        List<Owl> relatedBookList = new ArrayList<>();
         for (Owl owl : data) {
-            if (owl.getProperty().equals("type") && owl.getObject().equals(subject)) {
+            //存储关系为type和章节的数据
+            if ("type".equals(owl.getProperty()) && owl.getObject().equals(subject)) {
                 owlList.add(owl);
             }
-            if (owl.getProperty().equals("relatedBook") && owl.getObject().equals(zj)) {
-                owlList1.add(owl);
+            if ("relatedBook".equals(owl.getProperty()) && owl.getObject().equals(zj)) {
+                relatedBookList.add(owl);
             }
         }
+        //构建数据
         if (!owlList.isEmpty()) {
             for (Owl owl : owlList) {
                 if (hashSet.add(owl.getSubject())) {
                     if (!owl.getSubject().equals(zj)) {
                         note.append(buildComm.Build_Book_Note(owl.getSubject()));
-//                        note.append("{\"name\":\"" + owl.getSubject() + "\",\"des\":\"" + owl.getSubject() + "\",\"symbolSize\":60,\"category\":1" + "},");
                     } else {
                         note.append(buildComm.Build_Book_Note(owl.getSubject()));
-//                        note.append("{\"name\":\"" + owl.getSubject() + "\",\"des\":\"" + owl.getSubject() + "\",\"symbolSize\":60,\"category\":0" + "},");
                     }
                     link.append(buildComm.Build_Book_Link(owl.getObject(), owl.getSubject()));
-//                    link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + owl.getSubject() + "\",\"name\":\"属于\"" + "},");
                 }
             }
         }
 
-        if (!owlList1.isEmpty()) {
-            for (Owl owl : owlList1) {
+        if (!relatedBookList.isEmpty()) {
+            for (Owl owl : relatedBookList) {
                 if (hashSet.add(owl.getSubject())) {
                     note.append(buildComm.Build_Book_Note(owl.getSubject()));
                     link.append(buildComm.Build_Book_Link(owl.getObject(), owl.getSubject()));
-//                    note.append("{\"name\":\"" + owl.getSubject() + "\",\"des\":\"" + owl.getSubject() + "\",\"symbolSize\":60,\"category\":2" + "},");
-//                    link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + owl.getSubject() + "\",\"name\":\"拥有知识点\"" + "},");
                 } else {
                     link.append(buildComm.Build_Book_Link(owl.getObject(), owl.getSubject()));
-//                    link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + owl.getSubject() + "\",\"name\":\"拥有知识点\"" + "},");
                 }
             }
         }
@@ -321,15 +319,15 @@ public class MainServiceImpl implements MainService {
             Integer exist = 0;
             for (Owl owl : data) {
                 // isSiblingof
-                if (owl.getProperty().equals("isSiblingof") && owl.getSubject().equals(subject) && owl.getXd() != null && knowledge[0].contains(owl.getXd())) {
+                if ("isSiblingof".equals(owl.getProperty()) && owl.getSubject().equals(subject) && owl.getXd() != null && knowledge[0].contains(owl.getXd())) {
                     isSiblingofOwlList.add(owl);
                 }
                 // hasPostK
-                if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(subject) && owl.getXd() != null && knowledge[0].contains(owl.getXd())) {
+                if ("hasPostK".equals(owl.getProperty()) && owl.getSubject().equals(subject) && owl.getXd() != null && knowledge[0].contains(owl.getXd())) {
                     hasPostKOwlList.add(owl);
                 }
                 //hasPreK查询
-                if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(subject) && owl.getXd() != null && knowledge[0].contains(owl.getXd())) {
+                if ("hasPreK".equals(owl.getProperty()) && owl.getSubject().equals(subject) && owl.getXd() != null && knowledge[0].contains(owl.getXd())) {
                     hasPreKOwlList.add(owl);
                 }
 
@@ -349,16 +347,12 @@ public class MainServiceImpl implements MainService {
                 for (Owl owl : isSiblingofOwlList) {
                     if (hashSet.add(owl.getObject())) {
                         note.append(buildComm.Build_XD_Note(owl.getObject()));
-//                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":" + getSubject(owl.getObject()) + "},");
-//                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"并列知识点\"" + ",\"lineStyle\": {\"normal\": {\"color\":\"" + Type.ISSIBLINGOF_COLOR + "\" }}},");
                         link.append(buildComm.Build_XD_Link(owl.getSubject(), owl.getObject()));
                     } else {
                         link.append(buildComm.Build_XD_Link(owl.getSubject(), owl.getObject()));
-//                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"并列知识点\"" + ",\"lineStyle\": {\"normal\": {\"color\":\"" + Type.ISSIBLINGOF_COLOR + "\" }}},");
                     }
                 }
             }
-
 
             /*查询hasPostK*/
             HashSet<String> hasPostSet = new HashSet<>();
@@ -370,22 +364,18 @@ public class MainServiceImpl implements MainService {
                         if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
                             note.append(buildComm.Build_HX_Note(owl.getObject()));
                             link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
-//                            note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":" + getSubject(owl.getObject()) + "},");
-//                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2,\"color\":\"" + Type.HASPOSTK_COLOR + "\"}}},");
                         } else if (!owl.getSubject().equals(owl.getObject())) {
                             link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
-//                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2,\"color\":\"" + Type.HASPOSTK_COLOR + "\" }}},");
                         }
                     }
                 }
-                LinkedHashSet<String> count = new LinkedHashSet<>();
-                count.addAll(hasPostSet);
+                LinkedHashSet<String> count = new LinkedHashSet<>(hasPostSet);
                 while (!count.isEmpty()) {
                     String next = count.iterator().next();
                     count.remove(next);
                     List<Owl> owls = new ArrayList<>();
                     for (Owl owl : data) {
-                        //
+                        //查询后续关系知识点
                         if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(next) && owl.getXd() != null && knowledge[0].contains(owl.getXd())) {
                             owls.add(owl);
                         }
@@ -399,12 +389,8 @@ public class MainServiceImpl implements MainService {
                                     count.add(owl.getObject());
                                     note.append(buildComm.Build_HX_Note(owl.getObject()));
                                     link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
-//                                    note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":" + getSubject(owl.getObject()) + "},");
-//                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2 ,\"color\":\"" + Type.HASPOSTK_COLOR + "\" }}},");
-
                                 } else if (!owl.getSubject().equals(owl.getObject())) {
                                     link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
-//                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2 ,\"color\":\"" + Type.HASPOSTK_COLOR + "\" }}},");
                                 }
                             }
                         }
@@ -422,12 +408,8 @@ public class MainServiceImpl implements MainService {
                         if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
                             note.append(buildComm.Build_QX_Note(owl.getObject()));
                             link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
-//                            note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":" + getSubject(owl.getObject()) + "},");
-//                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.3,\"color\":\"" + Type.HASPREK_COLOR + "\" }}},");
                         } else if (!owl.getSubject().equals(owl.getObject())) {
                             link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
-//                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.3,\"color\":\"" + Type.HASPREK_COLOR + "\" }}},");
-
                         }
                     }
                 }
@@ -452,12 +434,8 @@ public class MainServiceImpl implements MainService {
                                     count.add(owl.getObject());
                                     note.append(buildComm.Build_QX_Note(owl.getObject()));
                                     link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
-//                                    note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":" + getSubject(owl.getObject()) + "},");
-//                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.3,\"color\":\"" + Type.HASPREK_COLOR + "\" }}},");
                                 } else if (!owl.getSubject().equals(owl.getObject())) {
                                     link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
-//                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.3,\"color\":\"" + Type.HASPREK_COLOR + "\" }}},");
-
                                 }
                             }
                         }
@@ -483,11 +461,8 @@ public class MainServiceImpl implements MainService {
                         if (hashSet.add(owl.getObject())) {
                             note.append(buildComm.Build_Book_Note(owl.getObject()));
                             link.append(buildComm.Build_Book_Link(owl.getSubject(), owl.getObject()));
-//                            note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":40,\"category\":" + getSubject(owl.getObject()) + "},");
-//                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"relatedBook关系\"" + ",\"lineStyle\": {\"normal\": { \"color\":\"" + Type.RELATEDBOOK_COLOR + "\" }}},");
                         } else {
                             link.append(buildComm.Build_Book_Link(owl.getSubject(), owl.getObject()));
-//                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"relatedBook关系\"" + ",\"lineStyle\": {\"normal\": { \"color\":\"" + Type.RELATEDBOOK_COLOR + "\" }}},");
                         }
                         List<Owl> owls = new ArrayList<>();
                         for (Owl owl1 : data) {
@@ -502,11 +477,8 @@ public class MainServiceImpl implements MainService {
                                 if (owl1.getObject().startsWith("MathBook") && hashSet.add(owl1.getObject())) {
                                     note.append(buildComm.Build_Book_Note(owl1.getObject()));
                                     link.append(buildComm.Build_Book_Link(owl1.getSubject(), owl1.getObject()));
-//                                    note.append("{\"name\":\"" + owl1.getObject() + "\",\"des\":\"版本:" + owl1.getObject() + "\",\"symbolSize\":40,\"category\":" + Type.BOOK_TYPE + "},");
-//                                    link.append("{\"source\":\"" + owl1.getSubject() + "\",\"target\":\"" + owl1.getObject() + "\",\"name\":\"属于\"" + ",\"lineStyle\": {\"normal\": { \"color\":\"" + Type.RELATEDBOOK_COLOR + "\" }}},");
                                 } else if (owl1.getObject().startsWith("MathBook")) {
                                     link.append(buildComm.Build_Book_Link(owl1.getSubject(), owl1.getObject()));
-//                                    link.append("{\"source\":\"" + owl1.getSubject() + "\",\"target\":\"" + owl1.getObject() + "\",\"name\":\"属于\"" + ",\"lineStyle\": {\"normal\": { \"color\":\"" + Type.RELATEDBOOK_COLOR + "\" }}},");
                                 }
                             }
                         }
@@ -527,11 +499,8 @@ public class MainServiceImpl implements MainService {
                     if (hashSet.add(owl.getObject())) {
                         note.append(buildComm.Build_CK_Note(owl.getObject()));
                         link.append(buildComm.Build_CK_Link(owl.getSubject(), owl.getObject()));
-//                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":" + getSubject(owl.getObject()) + "},");
-//                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"参考知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.3 ,\"color\":\"" + Type.HASREFK_COLOR + "\"}}},");
                     } else {
                         link.append(buildComm.Build_CK_Link(owl.getSubject(), owl.getObject()));
-//                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"参考知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.3 ,\"color\":\"" + Type.HASREFK_COLOR + "\"}}},");
                     }
                 }
             }
@@ -584,32 +553,24 @@ public class MainServiceImpl implements MainService {
                 subject = owlAll.getSubject();
                 List<Owl> isSiblingofOwlList = new ArrayList<>();
                 for (Owl owl : data) {
-                    //
-                    if (owl.getProperty().equals("isSiblingof") && owl.getSubject().equals(subject) && owl.getXd() != null && knowledge[0].contains(owl.getXd())) {
+                    //查询符合条件的数据
+                    if ("isSiblingof".equals(owl.getProperty()) && owl.getSubject().equals(subject) && owl.getXd() != null && knowledge[0].contains(owl.getXd())) {
                         isSiblingofOwlList.add(owl);
                     }
                 }
                 if (hashSet.add(subject)) {
                     note.append(buildComm.Build_PT_Note(subject));
-//                    note.append("{\"name\":\"" + subject + "\",\"des\":\"" + subject + "\",\"symbolSize\":50,\"category\":"+getSubject(subject) + "},");
                     link.append(buildComm.Build_PT_Link(query, subject));
-//                    link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
                 }
                 if (!isSiblingofOwlList.isEmpty()) {
                     for (Owl owl : isSiblingofOwlList) {
                         if (hashSet.add(owl.getObject())) {
                             note.append(buildComm.Build_XD_Note(owl.getObject()));
-//                            note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":"+getSubject(owl.getObject())+ "},");
                             link.append(buildComm.Build_XD_Link(owl.getSubject(), owl.getObject()));
                             link.append(buildComm.Build_PT_Link(query, subject));
-//                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"并列知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2 ,\"color\":\""+Type.ISSIBLINGOF_COLOR+"\"}}},");
-//                            link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
                         } else {
                             link.append(buildComm.Build_XD_Link(owl.getSubject(), owl.getObject()));
                             link.append(buildComm.Build_PT_Link(query, subject));
-//                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"并列知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2 ,\"color\":\"" + Type.ISSIBLINGOF_COLOR + "\"}}},");
-//                            link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
-
                         }
                     }
                 }
@@ -621,9 +582,6 @@ public class MainServiceImpl implements MainService {
                         hasPostKOwlList.add(owl);
                     }
                 }
-                /*HashMap<String, StringBuilder> postKMap = mainComm.getPostK(hasPostKOwlList, hashSet, data, query, subject);
-                note.append(postKMap.get("note"));
-                link.append(postKMap.get("link"));*/
 
                 HashSet<String> hasPostSet = new HashSet<>();
                 if (!hasPostKOwlList.isEmpty()) {
@@ -635,16 +593,9 @@ public class MainServiceImpl implements MainService {
                                 note.append(buildComm.Build_HX_Note(owl.getObject()));
                                 link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                 link.append(buildComm.Build_PT_Link(query, subject));
-//                                note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":" + getSubject(owl.getObject()) + "},");
-//                                link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2,\"color\":\"" + Type.HASPOSTK_COLOR + "\"}}},");
-//                                link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
-
                             } else if (!owl.getSubject().equals(owl.getObject())) {
                                 link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                 link.append(buildComm.Build_PT_Link(query, subject));
-//                                link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2,\"color\":\"" + Type.HASPOSTK_COLOR + "\"}}},");
-//                                link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
-
                             }
                         }
                     }
@@ -670,16 +621,9 @@ public class MainServiceImpl implements MainService {
                                         note.append(buildComm.Build_HX_Note(owl.getObject()));
                                         link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                         link.append(buildComm.Build_PT_Link(query, subject));
-//                                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":" + getSubject(owl.getObject()) + "},");
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2,\"color\":\"" + Type.HASPOSTK_COLOR + "\"}}},");
-//                                        link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
-
                                     } else if (!owl.getSubject().equals(owl.getObject())) {
                                         link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                         link.append(buildComm.Build_PT_Link(query, subject));
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2,\"color\":\"" + Type.HASPOSTK_COLOR + "\"}}},");
-//                                        link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
-
                                     }
                                 }
                             }
@@ -705,16 +649,9 @@ public class MainServiceImpl implements MainService {
                                 note.append(buildComm.Build_QX_Note(owl.getObject()));
                                 link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                 link.append(buildComm.Build_PT_Link(query, subject));
-//                                note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":" + getSubject(owl.getObject()) + "},");
-//                                link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2,\"color\":\"" + Type.HASPREK_COLOR + "\" }}},");
-//                                link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
-
                             } else if (!owl.getSubject().equals(owl.getObject())) {
                                 link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                 link.append(buildComm.Build_PT_Link(query, subject));
-//                                link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2,\"color\":\"" + Type.HASPREK_COLOR + "\" }}},");
-//                                link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
-
                             }
                         }
                     }
@@ -740,23 +677,15 @@ public class MainServiceImpl implements MainService {
                                         note.append(buildComm.Build_QX_Note(owl.getObject()));
                                         link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                         link.append(buildComm.Build_PT_Link(query, subject));
-//                                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":" + getSubject(owl.getObject()) + "},");
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2,\"color\":\"" + Type.HASPREK_COLOR + "\" }}},");
-//                                        link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
-
                                     } else if (!owl.getSubject().equals(owl.getObject())) {
                                         link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                         link.append(buildComm.Build_PT_Link(query, subject));
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2,\"color\":\"" + Type.HASPREK_COLOR + "\" }}},");
-//                                        link.append("{\"source\":\"" + query + "\",\"target\":\"" + subject + "\"},");
-
                                     }
                                 }
                             }
                         }
                     }
                 }
-
             }
             //relatedBook关系
             LinkedHashSet<String> linkedHashSet = new LinkedHashSet<>();
@@ -777,12 +706,8 @@ public class MainServiceImpl implements MainService {
                         if (hashSet.add(owl.getObject())) {
                             note.append(buildComm.Build_Book_Note(owl.getObject()));
                             link.append(buildComm.Build_Book_Link(owl.getSubject(), owl.getObject()));
-//                            note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":40,\"category\":" + getSubject(owl.getObject()) + "},");
-//                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"relatedBook关系\"" + ",\"lineStyle\": {\"normal\": { \"color\":\"" + Type.RELATEDBOOK_COLOR + "\" }}},");
-
                         } else {
                             link.append(buildComm.Build_Book_Link(owl.getSubject(), owl.getObject()));
-//                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"relatedBook关系\"" + ",\"lineStyle\": {\"normal\": { \"color\":\"" + Type.RELATEDBOOK_COLOR + "\" }}},");
                         }
                         List<Owl> owls = new ArrayList<>();
                         for (Owl owl1 : data) {
@@ -797,11 +722,8 @@ public class MainServiceImpl implements MainService {
                                 if (owl1.getObject().startsWith("MathBook") && hashSet.add(owl1.getObject())) {
                                     note.append(buildComm.Build_Book_Note(owl1.getObject()));
                                     link.append(buildComm.Build_Book_Link(owl1.getSubject(), owl1.getObject()));
-//                                    note.append("{\"name\":\"" + owl1.getObject() + "\",\"des\":\"版本:" + owl1.getObject() + "\",\"symbolSize\":40,\"category\":" + Type.BOOK_TYPE + "},");
-//                                    link.append("{\"source\":\"" + owl1.getSubject() + "\",\"target\":\"" + owl1.getObject() + "\",\"name\":\"属于\"" + ",\"lineStyle\": {\"normal\": { \"color\":\"" + Type.RELATEDBOOK_COLOR + "\" }}},");
                                 } else if (owl1.getObject().startsWith("MathBook")) {
                                     link.append(buildComm.Build_Book_Link(owl1.getSubject(), owl1.getObject()));
-//                                    link.append("{\"source\":\"" + owl1.getSubject() + "\",\"target\":\"" + owl1.getObject() + "\",\"name\":\"属于\"" + ",\"lineStyle\": {\"normal\": { \"color\":\"" + Type.RELATEDBOOK_COLOR + "\" }}},");
                                 }
                             }
                         }
@@ -878,8 +800,6 @@ public class MainServiceImpl implements MainService {
                             if (hashSet.add(subject)) {
                                 note.append(buildComm.Build_PT_Note(subject));
                                 link.append(buildComm.Build_PT_Link(o.getSubject(), subject));
-//                                note.append("{\"name\":\"" + subject + "\",\"des\":\"" + subject + "\",\"symbolSize\":50,\"category\":1" + "},");
-//                                link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + subject + "\"},");
                             }
                             if (!isSiblingofOwlList.isEmpty()) {
                                 for (Owl owl : isSiblingofOwlList) {
@@ -887,14 +807,9 @@ public class MainServiceImpl implements MainService {
                                         note.append(buildComm.Build_XD_Note(owl.getObject()));
                                         link.append(buildComm.Build_XD_Link(owl.getSubject(), owl.getObject()));
                                         link.append(buildComm.Build_PT_Link(o.getSubject(), owl.getObject()));
-//                                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":1" + "},");
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"并列知识点\"" + "},");
-//                                        link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
                                     } else {
                                         link.append(buildComm.Build_XD_Link(owl.getSubject(), owl.getObject()));
                                         link.append(buildComm.Build_PT_Link(o.getSubject(), owl.getObject()));
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"并列知识点\"" + "},");
-//                                        link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
                                     }
                                 }
                             }
@@ -917,15 +832,9 @@ public class MainServiceImpl implements MainService {
                                             note.append(buildComm.Build_HX_Note(owl.getObject()));
                                             link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                             link.append(buildComm.Build_PT_Link(o.getSubject(), owl.getObject()));
-//                                            note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":1" + "},");
-//                                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                            link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-
                                         } else if (!owl.getSubject().equals(owl.getObject())) {
                                             link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                             link.append(buildComm.Build_PT_Link(o.getSubject(), owl.getObject()));
-//                                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2 }}},");
-//                                            link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
                                         }
                                     }
                                 }
@@ -951,15 +860,9 @@ public class MainServiceImpl implements MainService {
                                                     note.append(buildComm.Build_HX_Note(owl.getObject()));
                                                     link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                                     link.append(buildComm.Build_PT_Link(o.getSubject(), owl.getObject()));
-//                                                    note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":1" + "},");
-//                                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                                    link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-
                                                 } else if (!owl.getSubject().equals(owl.getObject())) {
                                                     link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                                     link.append(buildComm.Build_PT_Link(o.getSubject(), owl.getObject()));
-//                                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": {\" curveness\": 0.2 }}},");
-//                                                    link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
                                                 }
                                             }
                                         }
@@ -985,16 +888,9 @@ public class MainServiceImpl implements MainService {
                                             note.append(buildComm.Build_QX_Note(owl.getObject()));
                                             link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                             link.append(buildComm.Build_PT_Link(o.getSubject(), owl.getObject()));
-//                                            note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":1" + "},");
-//                                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                            link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-
                                         } else if (!owl.getSubject().equals(owl.getObject())) {
                                             link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                             link.append(buildComm.Build_PT_Link(o.getSubject(), owl.getObject()));
-//                                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2 }}},");
-//                                            link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-
                                         }
                                     }
                                 }
@@ -1020,15 +916,9 @@ public class MainServiceImpl implements MainService {
                                                     note.append(buildComm.Build_QX_Note(owl.getObject()));
                                                     link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                                     link.append(buildComm.Build_PT_Link(o.getSubject(), owl.getObject()));
-//                                                    note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":1" + "},");
-//                                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                                    link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
                                                 } else if (!owl.getSubject().equals(owl.getObject())) {
                                                     link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                                     link.append(buildComm.Build_PT_Link(o.getSubject(), owl.getObject()));
-//                                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2 }}},");
-//                                                    link.append("{\"source\":\"" + o.getSubject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-
                                                 }
                                             }
                                         }
@@ -1049,8 +939,6 @@ public class MainServiceImpl implements MainService {
                                     if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
                                         note.append(buildComm.Build_CK_Note(owl.getObject()));
                                         link.append(buildComm.Build_CK_Link(owl.getSubject(), owl.getObject()));
-//                                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":4" + "},");
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"参考知识点\"" + "},");
                                     }
                                 }
                             }
@@ -1075,11 +963,8 @@ public class MainServiceImpl implements MainService {
                                     if (hashSet.add(owl.getObject())) {
                                         note.append(buildComm.Build_Book_Note(owl.getObject()));
                                         link.append(buildComm.Build_Book_Link(owl.getSubject(), owl.getObject()));
-//                                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":40,\"category\":2" + "},");
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"relatedBook关系\"" + "},");
                                     } else {
                                         link.append(buildComm.Build_Book_Link(owl.getSubject(), owl.getObject()));
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"relatedBook关系\"" + "},");
                                     }
                                     List<Owl> owls = new ArrayList<>();
                                     for (Owl owl1 : data) {
@@ -1094,11 +979,8 @@ public class MainServiceImpl implements MainService {
                                             if (owl1.getObject().startsWith("MathBook") && hashSet.add(owl1.getObject())) {
                                                 note.append(buildComm.Build_Book_Note(owl1.getObject()));
                                                 link.append(buildComm.Build_Book_Link(owl1.getSubject(), owl1.getObject()));
-//                                                note.append("{\"name\":\"" + owl1.getObject() + "\",\"des\":\"版本：" + owl1.getObject() + "\",\"symbolSize\":40,\"category\":3" + "},");
-//                                                link.append("{\"source\":\"" + owl1.getSubject() + "\",\"target\":\"" + owl1.getObject() + "\",\"name\":\"属于\"" + "},");
                                             } else if (owl1.getObject().startsWith("MathBook")) {
                                                 link.append(buildComm.Build_Book_Link(owl1.getSubject(), owl1.getObject()));
-//                                                link.append("{\"source\":\"" + owl1.getSubject() + "\",\"target\":\"" + owl1.getObject() + "\",\"name\":\"属于\"" + "},");
                                             }
                                         }
                                     }
@@ -1185,11 +1067,8 @@ public class MainServiceImpl implements MainService {
                             if (hashSet.add(owl2.getSubject())) {
                                 note.append(buildComm.Build_Education_Note(owl2.getSubject()));
                                 link.append(buildComm.Build_Education_Link(owl2.getObject(), owl2.getSubject()));
-//                                note.append("{\"name\":\"" + owl2.getSubject() + "\",\"des\":\"" + owl2.getSubject() + "\",\"symbolSize\":40,\"category\":1" + "},");
-//                                link.append("{\"source\":\"" + owl2.getObject() + "\",\"target\":\"" + owl2.getSubject() + "\",\"name\":\" \"" + "},");
                             } else {
                                 link.append(buildComm.Build_Education_Link(owl2.getObject(), owl2.getSubject()));
-//                                link.append("{\"source\":\"" + owl2.getObject() + "\",\"target\":\"" + owl2.getSubject() + "\",\"name\":\" \"" + "},");
                             }
                         }
                     }
@@ -1198,9 +1077,7 @@ public class MainServiceImpl implements MainService {
         }
 
         //所有教材体系
-//        note.append(buildComm.Build_Book_Note("所有教材体系"));
         note.append("{\"name\":\"所有教材体系\",\"des\":\"所有教材体系\",\"symbolSize\":60,\"category\":0" + "},");
-//        link.append(buildComm.Build_Book_Link("Thing","所有教材体系"));
         link.append("{\"source\":\"Thing\",\"target\":\"所有教材体系\"},");
         List<Owl> owlListAll = new ArrayList<>();
         for (Owl owl1 : data) {
@@ -1214,17 +1091,12 @@ public class MainServiceImpl implements MainService {
                 if (hashSet.add(owl.getObject())) {
                     note.append(buildComm.Build_Book_Note(owl.getObject()));
                     link.append(buildComm.Build_Book_Link("所有教材体系", owl.getObject()));
-//                    note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":60,\"category\":3" + "},");
-//                    link.append("{\"source\":\"所有教材体系\",\"target\":\"" + owl.getObject() + "\",\"name\":\"属于\"" + "},");
                 }
                 if (hashSet.add(owl.getSubject())) {
                     note.append(buildComm.Build_Book_Note(owl.getSubject()));
                     link.append(buildComm.Build_Book_Link(owl.getObject(), owl.getSubject()));
-//                    note.append("{\"name\":\"" + owl.getSubject() + "\",\"des\":\"" + owl.getSubject() + "\",\"symbolSize\":60,\"category\":2" + "},");
-//                    link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + owl.getSubject() + "\",\"name\":\"属于\"" + "},");
                 } else {
                     link.append(buildComm.Build_Book_Link(owl.getObject(), owl.getSubject()));
-//                    link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + owl.getSubject() + "\",\"name\":\"属于\"" + "},");
                 }
             }
         }
@@ -1245,7 +1117,6 @@ public class MainServiceImpl implements MainService {
             for (Owl o : first) {
                 if (o.getObject().startsWith("MathK") && hashSet.add(o.getObject())) {
                     note.append(buildComm.Build_Book_Note(o.getObject()));
-//                    note.append("{\"name\":\"" + o.getObject() + "\",\"des\":\"" + o.getObject() + "\",\"symbolSize\":50,\"category\":3" + "},");
                     link.append("{\"source\":\"所有的知识点体系\",\"target\":\"" + o.getObject() + "\"},");
 //                   //增加版本数据
                     List<Owl> all = new ArrayList<>();
@@ -1269,11 +1140,9 @@ public class MainServiceImpl implements MainService {
                             if (hashSet.add(subject)) {
                                 note.append(buildComm.Build_XD_Note(subject));
                                 link.append(buildComm.Build_PT_Link(o.getObject(), subject));
-//                                note.append("{\"name\":\"" + subject + "\",\"des\":\"" + subject + "\",\"symbolSize\":50,\"category\":4" + "},");
-//                                link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + subject + "\"},");
                             } else {
                                 link.append(buildComm.Build_PT_Link(o.getObject(), subject));
-//                                link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + subject + "\"},");
+
                             }
                             if (!isSiblingofOwlList.isEmpty()) {
                                 for (Owl owl : isSiblingofOwlList) {
@@ -1281,14 +1150,9 @@ public class MainServiceImpl implements MainService {
                                         note.append(buildComm.Build_XD_Note(owl.getObject()));
                                         link.append(buildComm.Build_XD_Link(owl.getSubject(), owl.getObject()));
                                         link.append(buildComm.Build_PT_Link(o.getObject(), owl.getObject()));
-//                                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":4" + "},");
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"并列知识点\"" + "},");
-//                                        link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + owl.getObject() + "\"},");
                                     } else {
                                         link.append(buildComm.Build_XD_Link(owl.getSubject(), owl.getObject()));
                                         link.append(buildComm.Build_PT_Link(o.getObject(), owl.getObject()));
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"并列知识点\"" + "},");
-//                                        link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + owl.getObject() + "\"},");
                                     }
                                 }
                             }
@@ -1311,14 +1175,9 @@ public class MainServiceImpl implements MainService {
                                             note.append(buildComm.Build_HX_Note(owl.getObject()));
                                             link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                             link.append(buildComm.Build_PT_Link(o.getObject(), owl.getObject()));
-//                                            note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":4" + "},");
-//                                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                            link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + owl.getObject() + "\"},");
                                         } else if (!owl.getSubject().equals(owl.getObject())) {
                                             link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                             link.append(buildComm.Build_PT_Link(o.getObject(), owl.getObject()));
-//                                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\"" + ",\"lineStyle\": {\"normal\": { \"curveness\": 0.2 }}},");
-//                                            link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + owl.getObject() + "\"},");
                                         }
                                     }
                                 }
@@ -1344,16 +1203,9 @@ public class MainServiceImpl implements MainService {
                                                     note.append(buildComm.Build_HX_Note(owl.getObject()));
                                                     link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                                     link.append(buildComm.Build_PT_Link(o.getObject(), owl.getObject()));
-//                                                    note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":4" + "},");
-//                                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                                    link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-
                                                 } else if (!owl.getSubject().equals(owl.getObject())) {
                                                     link.append(buildComm.Build_HX_Link(owl.getSubject(), owl.getObject()));
                                                     link.append(buildComm.Build_PT_Link(o.getObject(), owl.getObject()));
-//                                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"后继知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                                    link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-
                                                 }
                                             }
                                         }
@@ -1379,16 +1231,9 @@ public class MainServiceImpl implements MainService {
                                             note.append(buildComm.Build_QX_Note(owl.getObject()));
                                             link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                             link.append(buildComm.Build_PT_Link(o.getObject(), owl.getObject()));
-//                                            note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":4" + "},");
-//                                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                            link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-
                                         } else if (!owl.getSubject().equals(owl.getObject())) {
                                             link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                             link.append(buildComm.Build_PT_Link(o.getObject(), owl.getObject()));
-//                                            link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                            link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-
                                         }
                                     }
                                 }
@@ -1414,15 +1259,9 @@ public class MainServiceImpl implements MainService {
                                                     note.append(buildComm.Build_QX_Note(owl.getObject()));
                                                     link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                                     link.append(buildComm.Build_PT_Link(o.getObject(), owl.getObject()));
-//                                                    note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":4" + "},");
-//                                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                                    link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + owl.getObject() + "\"},");
-
                                                 } else if (!owl.getSubject().equals(owl.getObject())) {
                                                     link.append(buildComm.Build_QX_Link(owl.getSubject(), owl.getObject()));
                                                     link.append(buildComm.Build_PT_Link(o.getObject(), owl.getObject()));
-//                                                    link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"前序知识点\",\"lineStyle\": {\"normal\": { \"curveness\": 0.2}}},");
-//                                                    link.append("{\"source\":\"" + o.getObject() + "\",\"target\":\"" + owl.getObject() + "\"},");
                                                 }
                                             }
                                         }
@@ -1443,8 +1282,6 @@ public class MainServiceImpl implements MainService {
                                     if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
                                         note.append(buildComm.Build_CK_Note(owl.getObject()));
                                         link.append(buildComm.Build_CK_Link(owl.getSubject(), owl.getObject()));
-//                                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":50,\"category\":4" + "},");
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"参考知识点\"" + "},");
                                     }
                                 }
                             }
@@ -1469,11 +1306,8 @@ public class MainServiceImpl implements MainService {
                                     if (hashSet.add(owl.getObject())) {
                                         note.append(buildComm.Build_Book_Note(owl.getObject()));
                                         link.append(buildComm.Build_Book_Link(owl.getSubject(), owl.getObject()));
-//                                        note.append("{\"name\":\"" + owl.getObject() + "\",\"des\":\"" + owl.getObject() + "\",\"symbolSize\":40,\"category\":2" + "},");
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"relatedBook关系\"" + "},");
                                     } else {
                                         link.append(buildComm.Build_Book_Link(owl.getSubject(), owl.getObject()));
-//                                        link.append("{\"source\":\"" + owl.getSubject() + "\",\"target\":\"" + owl.getObject() + "\",\"name\":\"relatedBook关系\"" + "},");
                                     }
                                     List<Owl> owls = new ArrayList<>();
                                     for (Owl owl1 : data) {
@@ -1488,11 +1322,8 @@ public class MainServiceImpl implements MainService {
                                             if (owl1.getObject().startsWith("MathBook") && hashSet.add(owl1.getObject())) {
                                                 note.append(buildComm.Build_Book_Note(owl1.getObject()));
                                                 link.append(buildComm.Build_Book_Link(owl1.getSubject(), owl1.getObject()));
-//                                                note.append("{\"name\":\"" + owl1.getObject() + "\",\"des\":\"版本:" + owl1.getObject() + "\",\"symbolSize\":40,\"category\":3" + "},");
-//                                                link.append("{\"source\":\"" + owl1.getSubject() + "\",\"target\":\"" + owl1.getObject() + "\",\"name\":\"属于\"" + "},");
                                             } else if (owl1.getObject().startsWith("MathBook")) {
                                                 link.append(buildComm.Build_Book_Link(owl1.getSubject(), owl1.getObject()));
-//                                                link.append("{\"source\":\"" + owl1.getSubject() + "\",\"target\":\"" + owl1.getObject() + "\",\"name\":\"属于\"" + "},");
                                             }
                                         }
                                     }
@@ -1541,7 +1372,6 @@ public class MainServiceImpl implements MainService {
         /*查询hasPostK*/
         List<Owl> hasPostKOwlList = new ArrayList<>();
         for (Owl owl1 : data) {
-            //
             if (owl1.getProperty().equals("hasPostK") && owl1.getSubject().equals(subject)) {
                 hasPostKOwlList.add(owl1);
             }
@@ -1556,42 +1386,43 @@ public class MainServiceImpl implements MainService {
                     //判断subject和Object是否相同，和是否为最后一个
                     if (!owl.getSubject().equals(owl.getObject())) {
                         postList.add(owl.getObject());
-                        countPost++;
-                        if (countPost >= number) {
-                            break;
-                        }
                     }
                 }
             }
+            if (postList.size() != 0) {
+                countPost++;
+            }
             LinkedHashSet<String> count = new LinkedHashSet<>();
+            LinkedHashSet<String> temp_post = new LinkedHashSet<>();
             count.addAll(hasPostSet);
             if (countPost < number) {
-                loop:
                 while (!count.isEmpty()) {
+                    if (countPost == number) {
+                        break;
+                    }
                     String next = count.iterator().next();
                     count.remove(next);
                     List<Owl> owls = new ArrayList<>();
                     for (Owl owl1 : data) {
-                        //
                         if (owl1.getProperty().equals("hasPostK") && owl1.getSubject().equals(next)) {
                             owls.add(owl1);
                         }
                     }
                     if (!owls.isEmpty()) {
                         //控制当前查询的层数
-                        countPost++;
-                        if (countPost >= number) {
-                            break loop;
-                        }
                         for (Owl owl : owls) {
                             //查询不能为空
                             if (!owl.getObject().isEmpty() && hasPostSet.add(owl.getObject())) {
                                 //判断subject和Object是否相同，和是否为最后一个
                                 if (!owl.getSubject().equals(owl.getObject())) {
-                                    count.add(owl.getObject());
+                                    temp_post.add(owl.getObject());
                                     postList.add(owl.getObject());
                                 }
                             }
+                        }
+                        if (count.size() == 0 && countPost < number) {
+                            count.addAll(temp_post);
+                            countPost++;
                         }
                     }
                 }
@@ -1601,7 +1432,6 @@ public class MainServiceImpl implements MainService {
         /*hasPreK查询*/
         List<Owl> hasPreKOwlList = new ArrayList<>();
         for (Owl owl1 : data) {
-            //
             if (owl1.getProperty().equals("hasPreK") && owl1.getSubject().equals(subject)) {
                 hasPreKOwlList.add(owl1);
             }
@@ -1616,42 +1446,43 @@ public class MainServiceImpl implements MainService {
                     //判断subject和Object是否相同，和是否为最后一个
                     if (!owl.getSubject().equals(owl.getObject())) {
                         preList.add(owl.getObject());
-                        countPreK++;
-                        if (countPreK >= number) {
-                            break;
-                        }
                     }
                 }
             }
+            if (preList.size() != 0) {
+                countPreK++;
+            }
             LinkedHashSet<String> count = new LinkedHashSet<>();
+            LinkedHashSet<String> temp_pre = new LinkedHashSet<>();
             count.addAll(hasPreKSet);
             if (countPreK < number) {
-                loop:
                 while (!count.isEmpty()) {
+                    if (countPreK == number) {
+                        break;
+                    }
                     String next = count.iterator().next();
                     count.remove(next);
                     List<Owl> owls = new ArrayList<>();
                     for (Owl owl1 : data) {
-                        //
                         if (owl1.getProperty().equals("hasPreK") && owl1.getSubject().equals(next)) {
                             owls.add(owl1);
                         }
                     }
                     if (!owls.isEmpty()) {
                         //控制查询层级
-                        countPreK++;
-                        if (countPreK > number) {
-                            break loop;
-                        }
                         for (Owl owl : owls) {
                             //查询不能为空
                             if (!owl.getObject().isEmpty() && hasPreKSet.add(owl.getObject())) {
                                 //判断subject和Object是否相同，和是否为最后一个
                                 if (!owl.getSubject().equals(owl.getObject()) && hashSet.add(owl.getObject())) {
-                                    count.add(owl.getObject());
+                                    temp_pre.add(owl.getObject());
                                     preList.add(owl.getObject());
                                 }
                             }
+                        }
+                        if (count.size() == 0 && countPreK < number) {
+                            count.addAll(temp_pre);
+                            countPreK++;
                         }
                     }
                 }
@@ -1662,7 +1493,6 @@ public class MainServiceImpl implements MainService {
         /*查询参考知识点*/
         List<Owl> hasRefKList = new ArrayList<>();
         for (Owl owl1 : data) {
-            //
             if (owl1.getProperty().equals("hasRefK") && owl1.getSubject().equals(subject)) {
                 hasRefKList.add(owl1);
             }
@@ -1837,14 +1667,14 @@ public class MainServiceImpl implements MainService {
              * 3、赋值
              * */
             owlList.forEach(x -> {
-                if (xiaoXue.contains(x.getObject()) && xiaoXue.contains(x.getSubject())||xiaoXue.contains(x.getSubject())&&x.getObject().contains("知识点")) {
-                    if (x.getSubject().contains("关于分数")){
+                if (xiaoXue.contains(x.getObject()) && xiaoXue.contains(x.getSubject()) || xiaoXue.contains(x.getSubject()) && x.getObject().contains("知识点")) {
+                    if (x.getSubject().contains("关于分数")) {
                         System.out.println();
                     }
                     x.setXd("小学");
-                } else if (chuZhong.contains(x.getObject()) && chuZhong.contains(x.getSubject())||chuZhong.contains(x.getSubject())&&x.getObject().contains("知识点")) {
+                } else if (chuZhong.contains(x.getObject()) && chuZhong.contains(x.getSubject()) || chuZhong.contains(x.getSubject()) && x.getObject().contains("知识点")) {
                     x.setXd("初中");
-                } else if (gaoZhong.contains(x.getObject()) && gaoZhong.contains(x.getSubject())||gaoZhong.contains(x.getSubject())&&x.getObject().contains("知识点")) {
+                } else if (gaoZhong.contains(x.getObject()) && gaoZhong.contains(x.getSubject()) || gaoZhong.contains(x.getSubject()) && x.getObject().contains("知识点")) {
                     x.setXd("高中");
                 }
             });
@@ -1892,12 +1722,12 @@ public class MainServiceImpl implements MainService {
             }
 
             if (update.size() > 0) {
-                logger.info("更新成功，本次更新了：" + sum + "条数据--" + update.toString());
+                logger.info("更新成功，本次更新了：" + sum + "条数据--" + update);
                 owlRepository.saveAll(update);
 
             }
             if (del.size() > 0) {
-                logger.info("本次删除了：" + countDel + "条数据--" + del.toString());
+                logger.info("本次删除了：" + countDel + "条数据--" + del);
                 owlRepository.deleteAll(del);
             }
             logger.info("开始清除所有的key");

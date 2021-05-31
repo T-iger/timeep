@@ -24,24 +24,25 @@ import java.util.stream.Collectors;
  **/
 @Service
 public class OwlServiceImpl implements OwlService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private OwlRepository owlRepository;
     @Autowired
     private RedisTemplate redisTemplate;
-    private final Logger logger= LoggerFactory.getLogger(this.getClass());
 
     /**
      * 查找知识点
+     *
      * @return
      */
     @Override
     public List<String> findZhiShiDian() {
         List<Owl> owlList = owlRepository.findByPropertyAndObjectContaining("type", "知识点");
         List<String> list = new ArrayList<>();
-        HashSet set=new HashSet();
+        HashSet set = new HashSet();
         for (Owl owl : owlList) {
             //判断是否重复
-            if(set.add(owl.getSubject()))
+            if (set.add(owl.getSubject()))
                 list.add(owl.getSubject());
         }
         return list;
@@ -49,6 +50,7 @@ public class OwlServiceImpl implements OwlService {
 
     /**
      * 首次加载数据
+     *
      * @param subject
      * @param is
      * @return
@@ -60,7 +62,7 @@ public class OwlServiceImpl implements OwlService {
         List<Owl> owlList = new ArrayList<>();
         for (Owl owl : data) {
             //查询关于初中数学的知识点
-            if (owl.getProperty().equals("type")&&owl.getObject().startsWith("MathK")) {
+            if (owl.getProperty().equals("type") && owl.getObject().startsWith("MathK")) {
                 owlList.add(owl);
             }
         }
@@ -84,7 +86,7 @@ public class OwlServiceImpl implements OwlService {
             List<Owl> owls = new ArrayList<>();
             for (Owl owl : data) {
                 //查询当前知识点的并列知识点
-                if (owl.getProperty().equals("isSiblingof")&&owl.getSubject().equals(next)) {
+                if (owl.getProperty().equals("isSiblingof") && owl.getSubject().equals(next)) {
                     owls.add(owl);
                 }
             }
@@ -109,8 +111,8 @@ public class OwlServiceImpl implements OwlService {
             List<Owl> owls = new ArrayList<>();
             for (Owl owl : data) {
                 //查询当前知识点的后序知识点
-                if (owl.getProperty().equals("hasPostK")&&owl.getSubject().equals(next))
-                owls.add(owl);
+                if (owl.getProperty().equals("hasPostK") && owl.getSubject().equals(next))
+                    owls.add(owl);
             }
             if (!owls.isEmpty()) {
                 for (Owl owl : owls) {
@@ -133,8 +135,8 @@ public class OwlServiceImpl implements OwlService {
             List<Owl> owls = new ArrayList<>();
             for (Owl owl : data) {
                 //查询当前知识点的前序知识点
-                if (owl.getProperty().equals("hasPreK")&&owl.getSubject().equals(next))
-                owls.add(owl);
+                if (owl.getProperty().equals("hasPreK") && owl.getSubject().equals(next))
+                    owls.add(owl);
             }
             if (!owls.isEmpty()) {
                 for (Owl owl : owls) {
@@ -158,8 +160,8 @@ public class OwlServiceImpl implements OwlService {
                 List<Owl> owls = new ArrayList<>();
                 for (Owl owl : data) {
                     //查询当前知识点的前序知识点
-                    if (owl.getProperty().equals("relatedBook")&&owl.getSubject().equals(next))
-                    owls.add(owl);
+                    if (owl.getProperty().equals("relatedBook") && owl.getSubject().equals(next))
+                        owls.add(owl);
                 }
                 if (!owls.isEmpty()) {
                     for (Owl owl : owls) {
@@ -175,8 +177,8 @@ public class OwlServiceImpl implements OwlService {
                         List<Owl> owls2 = new ArrayList<>();
                         for (Owl o : data) {
                             //查询当前知识点的前序知识点
-                            if (o.getProperty().equals("type")&&o.getSubject().equals(o.getObject()))
-                            owls2.add(o);
+                            if (o.getProperty().equals("type") && o.getSubject().equals(o.getObject()))
+                                owls2.add(o);
                         }
                         if (!owls2.isEmpty()) {
                             for (Owl owl1 : owls2) {
@@ -196,7 +198,7 @@ public class OwlServiceImpl implements OwlService {
 
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note1.append("]");
             note = note1;
         } else {
@@ -204,7 +206,7 @@ public class OwlServiceImpl implements OwlService {
         }
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link.substring(0, link.length() - 1));
             link1.append("]");
             link = link1;
         } else {
@@ -282,8 +284,7 @@ public class OwlServiceImpl implements OwlService {
                     }
                 }
             }
-            LinkedHashSet<String> count = new LinkedHashSet<>();
-            count.addAll(hashSet);
+            LinkedHashSet<String> count = new LinkedHashSet<>(hashSet);
 //            Iterator iterator = hashSet.iterator();
 //            for (int i = 0; i < hashSet.size(); i++) {
             while (!count.isEmpty()) {
@@ -291,8 +292,7 @@ public class OwlServiceImpl implements OwlService {
                 count.remove(next);
                 List<Owl> owls = owlRepository.findByPropertyAndSubject("hasPostK", next);
                 if (!owls.isEmpty()) {
-                    for (int j = 0; j < owls.size(); j++) {
-                        Owl owl = owls.get(j);
+                    for (Owl owl : owls) {
                         //查询不能为空
                         if (!owl.getObject().isEmpty() && hashSet.add(owl.getObject())) {
                             count.add(owl.getObject());
@@ -300,10 +300,7 @@ public class OwlServiceImpl implements OwlService {
                             if (!owl.getSubject().equals(owl.getObject())) {
                                 note.append(",{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:1" + "}");
                                 link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + "}");
-                            } /*else {
-                                    note.append("{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:1" + "}");
-                                    link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'后继知识点'" + "}");
-                                }*/
+                            }
                         }
                     }
                 }
@@ -350,8 +347,6 @@ public class OwlServiceImpl implements OwlService {
             }
             LinkedHashSet<String> count = new LinkedHashSet<>();
             count.addAll(hashSet);
-//            Iterator iterator = hashSet.iterator();
-//            for (int i = 0; i < hashSet.size(); i++) {
             while (!count.isEmpty()) {
                 String next = count.iterator().next();
                 count.remove(next);
@@ -366,10 +361,7 @@ public class OwlServiceImpl implements OwlService {
                             if (!owl.getSubject().equals(owl.getObject())) {
                                 note.append(",{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:1" + "}");
                                 link.append(",{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + "}");
-                            }/* else {
-                                    note.append("{" + "name:'" + owl.getObject() + "',des:'" + owl.getObject() + "',symbolSize:50,category:1" + "}");
-                                    link.append("{" + "source:'" + owl.getSubject() + "',target:'" + owl.getObject() + "',name:'前序知识点'" + "}");
-                                }*/
+                            }
                         }
                     }
                 }
@@ -535,7 +527,7 @@ public class OwlServiceImpl implements OwlService {
         if (link.toString().startsWith("[,")) {
             StringBuilder link2 = new StringBuilder();
 
-            link2.append("[" + link.toString().substring(2, link.length()));
+            link2.append("[" + link.substring(2, link.length()));
             link = link2;
         }
 
@@ -598,7 +590,7 @@ public class OwlServiceImpl implements OwlService {
 
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note1.append("]");
             note = note1;
         } else {
@@ -607,7 +599,7 @@ public class OwlServiceImpl implements OwlService {
 
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link, 0, link.length() - 1);
             link1.append("]");
             link = link1;
         } else {
@@ -631,7 +623,6 @@ public class OwlServiceImpl implements OwlService {
         HashMap<String, String> hashMap = new HashMap<>();
         StringBuilder note = new StringBuilder();
         StringBuilder link = new StringBuilder();
-        LinkedHashSet<String> hashSet = new LinkedHashSet<>();
         note.append("[{" + "name:'" + subject + "',des:'" + subject + "',symbolSize:60,category:0" + "},");
         link.append("[");
         List<Owl> owlList1 = owlRepository.findByPropertyAndSubject("refertoSubject", subject);
@@ -666,7 +657,7 @@ public class OwlServiceImpl implements OwlService {
         }
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note1.append("]");
             note = note1;
         } else {
@@ -674,7 +665,7 @@ public class OwlServiceImpl implements OwlService {
         }
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link, 0, link.length() - 1);
             link1.append("]");
             link = link1;
         } else {
@@ -731,13 +722,13 @@ public class OwlServiceImpl implements OwlService {
 
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note1.append("]");
             note = note1;
         }
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link, 0, link.length() - 1);
             link1.append("]");
             link = link1;
         } else {
@@ -752,7 +743,6 @@ public class OwlServiceImpl implements OwlService {
     /*查询教材体系*/
     @Override
     public StringBuilder findTextbookSystem(String subject) {
-        HashMap<String, String> hashMap = new HashMap<>();
         StringBuilder note = new StringBuilder();
         StringBuilder link = new StringBuilder();
         LinkedHashSet<String> hashSet = new LinkedHashSet<>();
@@ -769,13 +759,13 @@ public class OwlServiceImpl implements OwlService {
         }
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note1.append("]");
             note = note1;
         }
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link.toString(), 0, link.length() - 1);
             link1.append("]");
             link = link1;
         } else {
@@ -789,7 +779,6 @@ public class OwlServiceImpl implements OwlService {
     /*查询所有的教材体系*/
     @Override
     public StringBuilder findAllTextbookSystem(String query) {
-        HashMap<String, String> hashMap = new HashMap<>();
         StringBuilder note = new StringBuilder();
         StringBuilder link = new StringBuilder();
         LinkedHashSet<String> hashSet = new LinkedHashSet<>();
@@ -810,13 +799,13 @@ public class OwlServiceImpl implements OwlService {
         }
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note1.append("]");
             note = note1;
         }
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link, 0, link.length() - 1);
             link1.append("]");
             link = link1;
         } else {
@@ -833,7 +822,6 @@ public class OwlServiceImpl implements OwlService {
         String[] strings = subject.split(",");
         subject = strings[0];
         String zj = strings[1];
-        HashMap<String, String> hashMap = new HashMap<>();
         StringBuilder note = new StringBuilder();
         StringBuilder link = new StringBuilder();
         LinkedHashSet<String> hashSet = new LinkedHashSet<>();
@@ -867,13 +855,13 @@ public class OwlServiceImpl implements OwlService {
 
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note1.append("]");
             note = note1;
         }
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link, 0, link.length() - 1);
             link1.append("]");
             link = link1;
         } else {
@@ -893,8 +881,8 @@ public class OwlServiceImpl implements OwlService {
         HashSet<String> hashSet = new HashSet<>();
         String subject = null;
         String[] knowledge = query.split("@");
-        if(knowledge.length>1){
-            subject=knowledge[1];
+        if (knowledge.length > 1) {
+            subject = knowledge[1];
             hashSet.add(subject);
             note.append("[{\"name\":\"" + knowledge[1] + "\",\"des\":\"" + knowledge[1] + "\",\"symbolSize\":60,\"category\":0" + "},");
             link.append("[");
@@ -1028,13 +1016,13 @@ public class OwlServiceImpl implements OwlService {
             }
             if (note.toString().endsWith(",")) {
                 StringBuilder note1 = new StringBuilder();
-                note1.append(note.toString().substring(0, note.length() - 1));
+                note1.append(note, 0, note.length() - 1);
                 note1.append("]");
                 note = note1;
             }
             if (link.toString().endsWith(",")) {
                 StringBuilder link1 = new StringBuilder();
-                link1.append(link.toString().substring(0, link.length() - 1));
+                link1.append(link, 0, link.length() - 1);
                 link1.append("]");
                 link = link1;
             } else {
@@ -1048,7 +1036,7 @@ public class OwlServiceImpl implements OwlService {
 
         note.append("[{\"name\":\"" + query + "\",\"des\":\"" + query + "\",\"symbolSize\":60,\"category\":0" + "},");
         link.append("[");
-        List<Owl> first = owlRepository.findByPropertyAndObject("equivalentClass", query+"知识点");
+        List<Owl> first = owlRepository.findByPropertyAndObject("equivalentClass", query + "知识点");
         if (!first.isEmpty()) {
             for (Owl owl : first) {
                 subject = owl.getSubject();
@@ -1212,13 +1200,13 @@ public class OwlServiceImpl implements OwlService {
 
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note1.append("]");
             note = note1;
         }
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link, 0, link.length() - 1);
             link1.append("]");
             link = link1;
         } else {
@@ -1417,13 +1405,13 @@ public class OwlServiceImpl implements OwlService {
 
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note = note1;
             note.append("]");
         }
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link, 0, link.length() - 1);
             link = link1;
             link.append("]");
         } else {
@@ -1674,13 +1662,13 @@ public class OwlServiceImpl implements OwlService {
 
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note1.append("]");
             note = note1;
         }
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link, 0, link.length() - 1);
             link1.append("]");
             link = link1;
         } else {
@@ -1695,6 +1683,7 @@ public class OwlServiceImpl implements OwlService {
 
     /**
      * 查询前后序和参考知识点
+     *
      * @param subject
      * @param number
      * @return
@@ -1823,6 +1812,7 @@ public class OwlServiceImpl implements OwlService {
 
     /**
      * 查询所有的教材体系
+     *
      * @param query
      * @return
      */
@@ -1846,12 +1836,12 @@ public class OwlServiceImpl implements OwlService {
                     link.append("{\"source\":\"" + owl.getObject() + "\",\"target\":\"" + owl.getSubject() + "\",\"name\":\"属于\"},");
                 }
                 List<Owl> relations = owlRepository.findByPropertyContainingAndSubject("referto", owl.getSubject());
-                if(!relations.isEmpty()){
+                if (!relations.isEmpty()) {
                     for (Owl relationOwl : relations) {
                         if (hashSet.add(relationOwl.getObject())) {
                             note.append("{\"name\":\"" + relationOwl.getObject() + "\",\"des\":\"" + relationOwl.getObject() + "\",\"symbolSize\":60,\"category\":3" + "},");
                             link.append("{\"source\":\"" + relationOwl.getSubject() + "\",\"target\":\"" + relationOwl.getObject() + "\",\"name\":\"教育属性\"" + "},");
-                        }else{
+                        } else {
                             link.append("{\"source\":\"" + relationOwl.getSubject() + "\",\"target\":\"" + relationOwl.getObject() + "\",\"name\":\"教育属性\"" + "},");
                         }
                     }
@@ -1860,13 +1850,13 @@ public class OwlServiceImpl implements OwlService {
         }
         if (note.toString().endsWith(",")) {
             StringBuilder note1 = new StringBuilder();
-            note1.append(note.toString().substring(0, note.length() - 1));
+            note1.append(note, 0, note.length() - 1);
             note1.append("]");
             note = note1;
         }
         if (link.toString().endsWith(",")) {
             StringBuilder link1 = new StringBuilder();
-            link1.append(link.toString().substring(0, link.length() - 1));
+            link1.append(link, 0, link.length() - 1);
             link1.append("]");
             link = link1;
         } else {
@@ -1897,40 +1887,40 @@ public class OwlServiceImpl implements OwlService {
         StmtIterator i = infmodel.listStatements();
 
         int count = 1;
-        List<Owl> owlList=new ArrayList<>();
+        List<Owl> owlList = new ArrayList<>();
         while (i.hasNext()) {
-            Owl owl=new Owl();
+            Owl owl = new Owl();
             Statement stmt = i.nextStatement();
             System.out.println("subject:" + stmt.getSubject() + "***property:" + stmt.getPredicate() + "***object:" + stmt.getObject());
             count++;
 
             //处理数据subject
             String subject = stmt.getSubject().toString();
-            if (subject!=null&&stmt.getSubject().toString().split("#").length>1){
+            if (subject != null && stmt.getSubject().toString().split("#").length > 1) {
                 subject = stmt.getSubject().toString().split("#")[1];
                 owl.setSubject(subject);
-            }else{
-                continue ;
+            } else {
+                continue;
             }
             System.out.println(subject);
 
             //取数据property
-            String property= stmt.getPredicate().getLocalName();
+            String property = stmt.getPredicate().getLocalName();
             owl.setProperty(property);
             System.out.println(property);
 
             //截取object字段
             String object = stmt.getObject().toString();
-            if (object!=null&&stmt.getObject().toString().split("#").length>1){
+            if (object != null && stmt.getObject().toString().split("#").length > 1) {
                 object = stmt.getObject().toString().split("#")[1];
                 owl.setObject(object);
-            }else{
+            } else {
                 continue;
 
             }
             System.out.println(object);
             //如果全是英文跳出循环
-            if (object.matches("[a-zA-Z]+")&&subject.matches("[a-zA-Z]+")) {
+            if (object.matches("[a-zA-Z]+") && subject.matches("[a-zA-Z]+")) {
                 count--;
                 continue;
             }
@@ -1938,13 +1928,13 @@ public class OwlServiceImpl implements OwlService {
             owlList.add(owl);
 
         }
-        String str= JSON.toJSON(owlList).toString();
+        String str = JSON.toJSON(owlList).toString();
         System.out.println(str);
         System.out.println("推理结束" + count);
         //库里的数据
         List<Owl> all = owlRepository.findAll();
         //需要更新的
-        List<Owl> update=new ArrayList<>();
+        List<Owl> update = new ArrayList<>();
         for (Owl owl : owlList) {
             for (Owl owl1 : all) {
                 //判断是否在库里
@@ -1957,11 +1947,11 @@ public class OwlServiceImpl implements OwlService {
         return true;
     }
 
-    public  List<Owl> getData() {
+    public List<Owl> getData() {
         if (!redisTemplate.hasKey("owl")) {
             logger.info("redis中数据不存在");
             List<Owl> all = owlRepository.findAll();
-            redisTemplate.opsForValue().set("owl",JSON.toJSON(all).toString());
+            redisTemplate.opsForValue().set("owl", JSON.toJSON(all).toString());
             logger.info("重新载入数据成功");
         }
         logger.info("读取redis数据");

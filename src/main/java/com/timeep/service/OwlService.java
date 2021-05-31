@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * 舍弃接口，换用mainService
+ * 供部分测试接口使用
+ *
  * @author Li
  **/
 public interface OwlService {

@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.timeep.service.MainService;
 import com.timeep.service.OwlService;
-import com.timeep.service.TempService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +26,132 @@ public class EchartsController {
     @Autowired
     private OwlService owlService;
     @Autowired
-    private TempService tempService;
-    @Autowired
     private MainService mainService;
 
+    /***********以下为出版社接口（在用接口）***************/
+    /**
+     * 定位查询教材体系
+     *
+     * @Param X (为教材版本,章节)
+     */
+    @PostMapping("RETextbookSystem")
+    public ResponseEntity<?> RETextbookSystem(Model model, @RequestParam("X") String X) {
+        return ResponseEntity.ok(mainService.TextbookSystem(X));
+    }
+
+    /**
+     * 数据查询接口
+     * @param params json格式
+     *  {
+     *     "flag": "3",
+     *     "relation": "all",
+     *     "query": "小学数学"
+     *  }
+     * @return 数据
+     */
+    @PostMapping("search")
+    public ResponseEntity<?> search(@RequestBody String params) {
+        try {
+            JSONObject jsonObject = JSON.parseObject(params);
+            //查询类型
+            int flag = jsonObject.getInteger("flag");
+            //查询关系
+            String relation = jsonObject.getString("relation");
+            //被查询数据
+            String query = jsonObject.getString("query");
+            //教育属性
+            if (flag == 1 && "all".equals(relation)) {
+                //query=初中数学人教版
+                return ResponseEntity.ok(mainService.findAllEducationProperty("Thing"));
+            } else if (flag == 2) {
+                //教材体系
+                // query=MathBookHK2014Chuzhong
+                if ("all".equals(relation)) {
+                    return ResponseEntity.ok(mainService.findAllTextbookSystem("Thing"));
+                } else if ("single".equals(relation)) {
+                    return ResponseEntity.ok(mainService.findTextbookSystem(query));
+                } else {
+                    return ResponseEntity.ok(false);
+                }
+            } else if (flag == 3) {
+                //知识点体系
+                if ("all".equals(relation) && !"".equals(query)) {
+                    return ResponseEntity.ok(mainService.findKnowledgePointSystem(query));
+                } else if ("all".equals(relation)) {
+                    return ResponseEntity.ok(mainService.findAllKnowledgePointSystem("Thing"));
+                } else {
+                    return ResponseEntity.ok(false);
+                }
+            } else if (flag == 4) {
+                //知识图谱
+                //query= 知识点
+                if ("all".equals(relation)) {
+                    return ResponseEntity.ok(mainService.findKnowledgeGraph(query));
+                } else {
+                    return ResponseEntity.ok(false);
+                }
+            } else {
+                return ResponseEntity.ok(false);
+            }
+        } catch (Exception re) {
+            return ResponseEntity.ok("{\"msg\":\"异常\"}");
+        }
+    }
+
+    /**
+     * 知识图谱版本更新
+     * @param params json数据
+     * @return 数据
+     */
+    @PostMapping("update")
+    public ResponseEntity<?> update(@RequestBody String params) {
+        HashMap<String, String> map = new HashMap<>();
+        try {
+            JSONObject jsonObject = JSON.parseObject(params);
+            String time = jsonObject.getString("time");
+            int d = jsonObject.getInteger("do");
+            String version = jsonObject.getString("version");
+
+            long startTime = System.currentTimeMillis();
+            /*boolean b = tempService.update();*/
+            Boolean b = mainService.reasoning();
+            long finishTime = System.currentTimeMillis();
+            System.out.println("总耗时:" + (finishTime - startTime) / 1000);
+            //设置日期格式
+            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            map.put("time", df.format(new Date()));
+            map.put("version", version);
+            if (b) {
+                map.put("do", "1");
+                return ResponseEntity.ok(map);
+            } else {
+                map.put("do", "0");
+                return ResponseEntity.ok(map);
+            }
+        } catch (Exception re) {
+            map.put("msg", "异常");
+            return ResponseEntity.ok(map);
+        }
+    }
+
+    /**
+     * 列表查询的数据（知识点的前后序，拥有层数控制）
+     * @param params json数据
+     * @return 数据
+     */
+    @PostMapping("findlist")
+    public ResponseEntity<?> findList(@RequestBody String params) {
+        JSONObject jsonObject = JSON.parseObject(params);
+        //查询数据
+        String knowledge = jsonObject.getString("knowledge");
+        //查询层数
+        int number = jsonObject.getInteger("number");
+        return ResponseEntity.ok(mainService.findIsSiblingOfAndRefK(knowledge, number));
+    }
+
+
+
+    /*****==========以下为测试接口==================*****/
     @GetMapping()
     public String hello(Model model) {
         List<String> zhiShiDian = owlService.findZhiShiDian();
@@ -169,132 +290,6 @@ public class EchartsController {
     @PostMapping("findAllTextbookSystemAndEducationProperty")
     public ResponseEntity<?> findAllTextbookSystemAndEducationProperty(Model model) {
         return ResponseEntity.ok(mainService.findAllTextbookSystemAndEducationProperty("Thing"));
-    }
-
-                                    /**以下为出版社接口*/
-    /**
-     * 定位查询教材体系
-     *
-     * @Param X (为教材版本,章节)
-     */
-    @PostMapping("RETextbookSystem")
-    public ResponseEntity<?> RETextbookSystem(Model model, @RequestParam("X") String X) {
-        return ResponseEntity.ok(mainService.TextbookSystem(X));
-    }
-
-    /**
-     * 数据查询接口
-     * @param params json格式
-     *  {
-     *     "flag": "3",
-     *     "relation": "all",
-     *     "query": "小学数学"
-     *  }
-     * @return 数据
-     */
-    @PostMapping("search")
-    public ResponseEntity<?> search(@RequestBody String params) {
-        try {
-            JSONObject jsonObject = JSON.parseObject(params);
-            //查询类型
-            int flag = jsonObject.getInteger("flag");
-            //查询关系
-            String relation = jsonObject.getString("relation");
-            //被查询数据
-            String query = jsonObject.getString("query");
-            //教育属性
-            if (flag == 1 && "all".equals(relation)) {
-                //query=初中数学人教版
-                return ResponseEntity.ok(mainService.findAllEducationProperty("Thing"));
-            } else if (flag == 2) {
-                //教材体系
-                // query=MathBookHK2014Chuzhong
-                if ("all".equals(relation)) {
-                    return ResponseEntity.ok(mainService.findAllTextbookSystem("Thing"));
-                } else if ("single".equals(relation)) {
-                    return ResponseEntity.ok(mainService.findTextbookSystem(query));
-                } else {
-                    return ResponseEntity.ok(false);
-                }
-            } else if (flag == 3) {
-                //知识点体系
-                if ("all".equals(relation) && !query.equals("")) {
-                    return ResponseEntity.ok(mainService.findKnowledgePointSystem(query));
-                } else if ("all".equals(relation) && query.equals("")) {
-                    return ResponseEntity.ok(mainService.findAllKnowledgePointSystem("Thing"));
-                } else {
-                    return ResponseEntity.ok(false);
-                }
-            } else if (flag == 4) {
-                //知识图谱
-                //query= 知识点
-                if ("all".equals(relation)) {
-                    return ResponseEntity.ok(mainService.findKnowledgeGraph(query));
-                } else {
-                    return ResponseEntity.ok(false);
-                }
-            } else {
-                return ResponseEntity.ok(false);
-            }
-        } catch (RuntimeException re) {
-            return ResponseEntity.ok("{\"msg\":\"异常\"}");
-        } catch (Exception e) {
-            return ResponseEntity.ok("{\"msg\":\"异常\"}");
-        }
-    }
-
-    /**
-     * 知识图谱版本更新
-     * @param params json数据
-     * @return 数据
-     */
-    @PostMapping("update")
-    public ResponseEntity<?> update(@RequestBody String params) {
-        HashMap<String, String> map = new HashMap<>();
-        try {
-            JSONObject jsonObject = JSON.parseObject(params);
-            String time = jsonObject.getString("time");
-            int d = jsonObject.getInteger("do");
-            String version = jsonObject.getString("version");
-
-            long startTime = System.currentTimeMillis();
-            /*boolean b = tempService.update();*/
-            Boolean b = mainService.reasoning();
-            long finishTime = System.currentTimeMillis();
-            System.out.println("总耗时:" + (finishTime - startTime) / 1000);
-            //设置日期格式
-            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            map.put("time", df.format(new Date()));
-            map.put("version", version);
-            if (b) {
-                map.put("do", "1");
-                return ResponseEntity.ok(map);
-            } else {
-                map.put("do", "0");
-                return ResponseEntity.ok(map);
-            }
-        } catch (RuntimeException re) {
-            map.put("msg", "异常");
-            return ResponseEntity.ok(map);
-        } catch (Exception e) {
-            map.put("msg", "异常");
-            return ResponseEntity.ok(map);
-        }
-    }
-
-    /**
-     * 列表查询的数据（知识点的前后序，拥有层数控制）
-     * @param params json数据
-     * @return 数据
-     */
-    @PostMapping("findlist")
-    public ResponseEntity<?> findList(@RequestBody String params) {
-        JSONObject jsonObject = JSON.parseObject(params);
-        //查询数据
-        String knowledge = jsonObject.getString("knowledge");
-        //查询层数
-        int number = jsonObject.getInteger("number");
-        return ResponseEntity.ok(mainService.findIsSiblingOfAndRefK(knowledge, number));
     }
 
 }
